@@ -17,12 +17,14 @@ import Inventario from "./pages/inventario e infraestructura/Inventario.jsx";
 import Login from "./pages/login/Login.jsx";
 import Planificacion from "./pages/planificacion/Planificacion.jsx";
 import Proyecto from "./pages/proyectos/Proyecto.jsx";
+import Navbar from "./components/Navbar.jsx"
 
 
 function App() {
-  	return (
+  return (
 		<BrowserRouter>
 			<div>
+        <Navbar/>  
 				<ul>
 					<li>
 						<NavLink to="/grupo">grupo</NavLink>
@@ -49,7 +51,7 @@ function App() {
 				<Route path="/grupo/planificacion/proyecto" element={ <Proyecto/> }></Route>
 			</Routes>
 		</BrowserRouter>
-  	)
+  )
 }
 
 export default App

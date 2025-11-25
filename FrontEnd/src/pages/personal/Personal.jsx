@@ -1,44 +1,42 @@
 import React from "react";
 import { useParams } from "react-router-dom"
-import CabeceraTabla from "../../components/CabeceraTabla"
-import Boton from "../../components/Boton";
+
 import Tabla from "../../components/Tabla";
-import "./Proyecto.css";
+import CabeceraTabla from "../../components/CabeceraTabla";
+import Boton from "../../components/Boton";
+import "./Personal.css"
 
-function Proyecto() {
+function Personal() {
 
-    const columnas = ["Codigo", "Nombre", "Fecha de Inicio", "Fecha de Fin"];
-    const datosPrueba = [["001", "Curso 1", "29-10-25", "31-12-25"], ["002", "Curso 2", "10-11-25", "31-03-26"]];
+    const columnas = ["Codigo", "Nombre", "Apellido", "Horas Semanales", "Area"];
+    const datosPrueba = [["001", "Carla", "Sanchez", "40", "Soporte"], ["002", "Carlos", "Sainz", "20", "Profesional"], ["003", "Carolina", "Suarez", "30", "Profesional"]];
 
-    function agregarProyecto() {
-        return alert("agregar proyecto");      
+    function agregarPersonal() {
+        return alert("agregar personal");      
     }
 
     function verDescripcion() {
         return alert("ver descripcion");
     }
     
-    function verLogros() {
-        return alert("ver logros");
+    function desvincular() {
+        return alert("desvincular");
         
     }
 
-    function verDificultades() {
-        return alert("ver dificultades");
-    }
-
     return (
+
         <div>
             <div>
                 <h1>
-                    proyectos
+                    Personal
                 </h1>
             </div>
             <div>
                 <div className="row container-fluid">
                     <div className="col-10"></div>
                     <div className="col-2">
-                        <Boton texto={"Agregar Proyecto"} accion={agregarProyecto}></Boton>
+                        <Boton texto={"+ Agregar Personal"} accion={agregarPersonal}></Boton>
                     </div>
                 </div>
                 <div className="row container-fluid">
@@ -58,10 +56,7 @@ function Proyecto() {
                         <Boton texto={"Ver Descripcion"} accion={verDescripcion}></Boton>
                     </div>
                     <div className="col-3">
-                        <Boton texto={"Ver Logros"} accion={verLogros}></Boton>
-                    </div>
-                    <div className="col-3">
-                        <Boton texto={"Ver Dificultades"} accion={verDificultades}></Boton>
+                        <Boton texto={"Desvincular"} accion={desvincular}></Boton>
                     </div>
                 </div>
                 <div className="row container-fluid">
@@ -72,8 +67,8 @@ function Proyecto() {
                     </div>
                 </div>
             </div>
-        </div>    
+        </div> 
     )
-}
+} 
 
-export default Proyecto
+export default Personal;

@@ -1,6 +1,8 @@
 from app import db
 
 class Personal(db.Model):
+    __tablename__ = 'persona'
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     apellido = db.Column(db.String(100), nullable=False)
@@ -8,11 +10,11 @@ class Personal(db.Model):
 
     # FK
     gradoAcademicoId = db.Column('grado_academico', db.Integer, db.ForeignKey('grado_academico.id'))
-    institucion = db.Column(db.Integer)
+    institucionId = db.Column(db.Integer)
 
     #Relaciones
     grado = db.relationship('GradoAcademico', backref='personales')
-    actividades = db.relationship('ActividadDocente', backref='personal', lazy=True)
+    actividadesDocente = db.relationship('ActividadDocente', backref='personal', lazy=True)
 
     #OBJ Type
     objectType = db.Column(db.String(50))
@@ -40,12 +42,60 @@ class Personal(db.Model):
             'nombre': self.nombre,
             'apellido': self.apellido,
             'horas': self.horas,
-            'gradoAcademico': self.gradoAcademico,
-            'institucion': self.institucion,
+            'gradoAcademicoId': self.gradoAcademicoId,
+            'institucionId': self.institucionId,
             'objectType': self.objectType,
-            'categoria': self.categoria,
-            'incentivo': self.incentivo,
-            'dedicacion': self.dedicacion,
-            'especialidad': self.especialidad,
-            'descripcion': self.descripcion
         }
+    
+class Becario(Personal):
+    __mapper_args__ = {
+        'polymorphic_identity': 'becario'
+    }
+    
+    def to_dict(self):
+        data = super().to_dict()
+        data['rol'] = self.rol
+        return data
+    
+class Soporte(Personal):
+    __mapper_args__ = {
+        'polymorphic_identity': 'soporte'
+    }
+    
+    def to_dict(self):
+        data = super().to_dict()
+        data['rol'] = self.rol
+        return data
+    
+class Visitante(Personal):
+    __mapper_args__ = {
+        'polymorphic_identity': 'visitante'
+    }
+    
+    def to_dict(self):
+        data = super().to_dict()
+        data['rol'] = self.rol
+        return data
+
+class Investigador(Personal):
+    __mapper_args__ = {
+        'polymorphic_identity': 'investigador'
+    }
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['categoria'] = self.categoria
+        data['incentivo'] = self.incentivo
+        data['dedicacion'] = self.dedicacion
+        return data
+
+class Profesional(Personal):
+    __mapper_args__ = {
+        'polymorphic_identity': 'profesional'
+    }
+    
+    def to_dict(self):
+        data = super().to_dict()
+        data['especialidad'] = self.especialidad
+        data['descripcion'] = self.descripcion
+        return data

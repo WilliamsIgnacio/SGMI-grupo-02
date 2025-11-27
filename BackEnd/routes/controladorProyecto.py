@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask.views import MethodView
 from datetime import datetime
-from app import db
+from database import db
 from models.proyecto import Proyecto
 
 proyecto_bp = Blueprint('proyecto_bp', __name__)

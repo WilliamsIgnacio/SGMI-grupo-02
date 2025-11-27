@@ -1,11 +1,11 @@
-from app import db
+from database import db
 
 class ActividadDocente(db.Model):
     __tablename__ = 'actividad_docente'
 
     id = db.Column(db.Integer, primary_key=True)
-    fechaInicio = db.Column(db.Date)
-    fechaFin = db.Column(db.Date)
+    fechaInicio = db.Column('fecha_inicio', db.Date)
+    fechaFin = db.Column('fecha_fin', db.Date)
     rol = db.Column(db.String(50)) 
     
     # FK

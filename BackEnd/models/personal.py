@@ -1,4 +1,4 @@
-from app import db
+from database import db
 
 class Personal(db.Model):
     __tablename__ = 'persona'
@@ -10,14 +10,14 @@ class Personal(db.Model):
 
     # FK
     gradoAcademicoId = db.Column('grado_academico', db.Integer, db.ForeignKey('grado_academico.id'))
-    institucionId = db.Column(db.Integer)
+    institucionId = db.Column('institucion', db.Integer)
 
     #Relaciones
     grado = db.relationship('GradoAcademico', backref='personales')
     actividadesDocente = db.relationship('ActividadDocente', backref='personal', lazy=True)
 
     #OBJ Type
-    objectType = db.Column(db.String(50))
+    objectType = db.Column('object_type', db.String(50))
     
     #Investigador
     categoria = db.Column(db.String(50), nullable=True)

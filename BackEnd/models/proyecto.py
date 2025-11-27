@@ -1,4 +1,4 @@
-from app import db
+from database import db
 
 class Proyecto(db.Model):
     __tablename__ = 'proyecto'
@@ -12,8 +12,8 @@ class Proyecto(db.Model):
     logros = db.Column(db.String(200), nullable=True)
     dificultades = db.Column(db.String(200), nullable=True)
 
-    fechaInicio = db.Column(db.Date, nullable=False)
-    fechaFin = db.Column(db.Date, nullable=True)
+    fechaInicio = db.Column('fecha_inicio', db.Date, nullable=False)
+    fechaFin = db.Column('fecha_fin', db.Date, nullable=True)
 
     grupoId = db.Column('grupo', db.Integer)
 

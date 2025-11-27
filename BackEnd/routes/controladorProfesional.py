@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask.views import MethodView
-from app import db
+from database import db
 from models.personal import Profesional
 
 profesional_bp = Blueprint('profesional_bp', __name__)

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
-from app import db
+from database import db
 from models.personal import Investigador
 
 investigador_bp = Blueprint('investigador_bp', __name__)

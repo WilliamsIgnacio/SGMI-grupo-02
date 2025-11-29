@@ -2,7 +2,9 @@ import React from "react";
 import { useParams } from "react-router-dom"
 import CabeceraTabla from "../../components/CabeceraTabla"
 import Boton from "../../components/Boton";
+import BotonAgregar from "../../components/BotonAgregar";
 import Tabla from "../../components/Tabla";
+import imagenMas from "../../images/mas.png"
 import "./Proyecto.css";
 
 function Proyecto() {
@@ -38,7 +40,10 @@ function Proyecto() {
                 <div className="row container-fluid">
                     <div className="col-10"></div>
                     <div className="col-2">
-                        <Boton texto={"Agregar Proyecto"} accion={agregarProyecto}></Boton>
+                        <BotonAgregar accion={agregarProyecto}>
+                            <img className="imagenMas" src={imagenMas} alt="imagen mas"/>
+                            Agregar Proyecto
+                        </BotonAgregar>
                     </div>
                 </div>
                 <div className="row container-fluid">

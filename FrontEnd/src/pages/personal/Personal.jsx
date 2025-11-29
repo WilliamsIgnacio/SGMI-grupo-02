@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom"
 import Tabla from "../../components/Tabla";
 import CabeceraTabla from "../../components/CabeceraTabla";
 import Boton from "../../components/Boton";
+import BotonAgregar from "../../components/BotonAgregar";
+import imagenMas from "../../images/mas.png"
 import "./Personal.css"
 
 function Personal() {
@@ -36,7 +38,10 @@ function Personal() {
                 <div className="row container-fluid">
                     <div className="col-10"></div>
                     <div className="col-2">
-                        <Boton texto={"+ Agregar Personal"} accion={agregarPersonal}></Boton>
+                        <BotonAgregar accion={agregarPersonal}>
+                            <img className="imagenMas" src={imagenMas} alt="imagen mas"/>
+                            Agregar Personal
+                        </BotonAgregar>
                     </div>
                 </div>
                 <div className="row container-fluid">

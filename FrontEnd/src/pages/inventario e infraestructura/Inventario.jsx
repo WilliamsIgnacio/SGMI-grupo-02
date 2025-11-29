@@ -2,7 +2,9 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import CabeceraTabla from "../../components/CabeceraTabla"
 import Boton from "../../components/Boton";
+import BotonAgregar from "../../components/BotonAgregar";
 import Tabla from "../../components/Tabla";
+import imagenMas from "../../images/mas.png"
 import "./Inventario.css"
 
 
@@ -38,10 +40,16 @@ function Inventario() {
                 <div className="row container-fluid">
                     <div className="col-10"></div>
                     <div className="col-2">
-                        <Boton texto={"Agregar Equipamiento"} accion={agregarEquipamiento}></Boton>
+                        <BotonAgregar  accion={agregarEquipamiento}>
+                            <img className="imagenMas" src={imagenMas} alt="imagen mas"/>
+                            Agregar Equipamiento
+                        </BotonAgregar>
                     </div>
                     <div className="col-2">
-                        <Boton texto={"Agregar Bibliografia"} accion={agregarBibliografia}></Boton>
+                        <BotonAgregar accion={agregarBibliografia}>
+                            <img className="imagenMas" src={imagenMas} alt="imagen mas"/>
+                            Agregar Bibliografia
+                        </BotonAgregar>
                     </div>
                 </div>
                 <div className="row container-fluid">

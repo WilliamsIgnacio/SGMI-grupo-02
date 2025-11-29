@@ -1,10 +1,11 @@
 import React from "react";
 import CabeceraTabla from "./CabeceraTabla";
 import Table from "react-bootstrap/Table"
+import "./Tabla.css"
 
 function Tabla({columnas, filas}) {
     return (
-        <Table striped>
+        <Table striped className="tabla">
             <CabeceraTabla arrayCampos={columnas}></CabeceraTabla>
             <tbody>
                 {filas.map((fila, index) => (

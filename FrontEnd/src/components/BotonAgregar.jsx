@@ -3,16 +3,16 @@ import Button from "react-bootstrap/Button";
 import "./Boton.css"
 
 
-function Boton({texto, accion}){
+function BotonAgregar({children, accion}){
     return (
         <Button className="boton"
             variant="primary"
             type="button"
             onClick={()=>accion()}
         >
-            {texto}
+            {children}
         </Button>
     )
 }
 
-export default Boton;
+export default BotonAgregar;

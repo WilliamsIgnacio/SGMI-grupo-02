@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+.tabla {
+    font-family: "Albert Sans", sans-serif;
+    border: 0.5px solid #bdbdbd;
+    border-collapse: collapse; 
+    width: 100%;
+}
+
+.tabla th, 
+.tabla td {
+    border: 0.5px solid #bdbdbd;
+    padding: 10px 15px;
+    text-align: left; 
+    word-wrap: break-word; 
+    font-weight: 300;
+    text-align: center;
+}
+
+.tabla thead th {
+    font-weight: 500;
+}
+
+.tabla > tbody > tr {
+    background-color: transparent !important; 
+}

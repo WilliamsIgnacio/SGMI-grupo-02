@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom"
 import Boton from "../../components/Boton"
 import "./Planificacion.css"
+import BotonAgregar from "../../components/BotonAgregar"
+import imagenMas from "../../images/mas.png"
 
 function Planificacion() {
 
@@ -20,7 +22,10 @@ function Planificacion() {
                 <div className="row container-fluid">
                     <div className="col-10"></div>
                     <div className="col-2">
-                        <Boton texto={"Agregar Planificacion"} accion={agregarPlanificacion}></Boton>
+                        <BotonAgregar accion={agregarPlanificacion}>
+                            <img className="imagenMas" src={imagenMas} alt="imagen mas"/>
+                            Agregar Planificación
+                        </BotonAgregar>
                     </div>
                 </div>
             </div>

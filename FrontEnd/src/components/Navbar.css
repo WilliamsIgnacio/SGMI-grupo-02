@@ -1,0 +1,21 @@
+.navbar {
+    padding: 0px;
+}
+
+.figure {
+    margin: 0px;
+}
+
+.imagen {
+    margin: 5px;
+    border-radius: 100%;
+    height: 60px;
+}
+
+.iconoCerrarSesion {
+    height: 25px;
+}
+
+.desplegable {
+    padding-right: 10px;
+}

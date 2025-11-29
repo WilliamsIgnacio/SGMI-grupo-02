@@ -4,7 +4,10 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import NavDropdown from "react-bootstrap";
+import { NavDropdown } from "react-bootstrap";
+import imagenUser from '../images/user-img.png';
+import "./Navbar.css";
+import iconoCerrarSesion from '../images/logoCerrarSesion.png';
 
 function navbar() {
 
@@ -24,22 +27,24 @@ function navbar() {
                         <Nav.Link href="#action1">Home</Nav.Link>
                         <Nav.Link href="#action2">Link</Nav.Link>
                     </Nav>
-                    <div className="d-flex">
+                    <div className="d-flex align-items-center">
                         <div className="me-2">
                             Avril Lavigne
                         </div>
-                        <NavDropdown title="Link" id="navbarScrollingDropdown">
-                            <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-                            <NavDropdown.Item href="#action4">
-                                Another action
-                            </NavDropdown.Item>
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item href="#action5">
-                                Something else here
+                        <NavDropdown title="" className="me-2" align="end">
+                            <NavDropdown.Item href="#action3">
+                                <div className="d-flex align-items-center">
+                                    <span className="me-2">Cerrar Sesion</span>
+                                    <img 
+                                        className="iconoCerrarSesion" 
+                                        src={iconoCerrarSesion} 
+                                        alt="icono cerrar sesion" 
+                                    />
+                                </div>
                             </NavDropdown.Item>
                         </NavDropdown>
-                        <figure>
-                            <img src="" alt="imagen del perfil del usuario" />
+                        <figure className="figure">
+                            <img className="imagen " src={imagenUser} alt="imagen del perfil del usuario" />
                         </figure>
                     </div>
                 </Navbar.Collapse>

@@ -11,13 +11,14 @@ function Login() {
     }
 
     return (
-        <div>
-            <h1>bienvenido a SGMI</h1>
-            <div className="row-container-fluid">
+        <div className="container-fluid">
+            <h1>Bienvenido de vuelta!</h1>
+            <h3>Sistema de Gestión de Memorias de Grupos y Centros de Investigación</h3>
+            <div className="row container-fluid">
                 <div className="col-3">
                     <Form>
                         <Form.Group className="mb-3" controlId="emailLogin">
-                            <Form.Label>Correo Electrónico</Form.Label>
+                            <Form.Label>Email</Form.Label>
                             <Form.Control type="email" placeholder="tumail@ejemplo.com" />
                         </Form.Group>
                     
@@ -27,10 +28,10 @@ function Login() {
                         </Form.Group>
                     </Form>
                 </div>
+                <div className="col-9">
+                    <img className="imagen-logo" src={imagenLogin} alt="imagen login" width={"950px"} height={"600px"}/>
+                </div>
             </div>
-
-            <img className="imagen-logo" src={imagenLogin} alt="imagen login" width={"450px"} height={"300px"}/>
-    
             <Boton texto={"Iniciar Sesión"} accion={iniciarSesion}></Boton>
         </div>
     )

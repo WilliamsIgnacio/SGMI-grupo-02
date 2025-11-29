@@ -39,9 +39,6 @@ function Grupo() {
     return (
         <div>
             <div>
-                <h1>aca va el header</h1>
-            </div>
-            <div>
                 <div className="row container-fluid">
                     <h1 className="col-2">Grupos:</h1>
                     <div className="col-8"></div>

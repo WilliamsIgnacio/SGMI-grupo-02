@@ -26,6 +26,7 @@ from routes.controladorVisitante import visitante_bp
 from routes.controladorProyecto import proyecto_bp
 from routes.controladorGradoAcademico import grado_academico_bp
 from routes.controladorActividadDocente import actividad_docente_bp
+from routes.controladorEnumerativas import enums_bp
 
 
 #configuracion apis
@@ -37,6 +38,7 @@ app.register_blueprint(visitante_bp, url_prefix='/api/visitantes')
 app.register_blueprint(proyecto_bp, url_prefix='/api/proyectos')
 app.register_blueprint(grado_academico_bp, url_prefix='/api/grados-academicos')
 app.register_blueprint(actividad_docente_bp, url_prefix='/api/actividades-docente')
+app.register_blueprint(enums_bp, url_prefix='/api/enums')
 
 
 #Prueba para ver que todo este instalado correctamente

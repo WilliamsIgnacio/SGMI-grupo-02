@@ -18,8 +18,9 @@ from sqlalchemy import Column, Integer, String, Text, Date, DateTime, LargeBinar
 try:
     from sqlalchemy.dialects.postgresql import MONEY as Money
 except Exception:
-    # Fallback to String for environments without PostgreSQL dialect installed.
-    Money = String
+    # Fallback to Numeric for better type handling than String
+    from sqlalchemy import Numeric
+    Money = Numeric(precision=19, scale=2)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -334,3 +335,9 @@ class Erogacion(db.Model):
     
     institucion_ref = relationship('Institucion', back_populates='erogaciones')
     # tipo_erogacion_ref = relationship('TipoErogacion', back_populates='erogaciones')
+
+class RolParticipacion(db.Model):
+    __tablename__ = 'rol_participacion'
+    
+    id = Column(BigInteger, primary_key=True)
+    nombre = Column(String, nullable=False)

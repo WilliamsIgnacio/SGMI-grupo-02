@@ -4,28 +4,11 @@ import Boton from "../../components/Boton"
 import "./Planificacion.css"
 import BotonAgregar from "../../components/BotonAgregar"
 import imagenMas from "../../images/mas.png"
-import ModalFormularios from "../../components/ModalFormularios";
 
 function Planificacion() {
 
-    const [modalShow, setModalShow] = React.useState(false);
-
-    const [modalInfo, setModalInfo] = React.useState({
-        titulo: '',
-        contenido: null
-    })
-
     function agregarPlanificacion() {
-        setModalInfo({
-            titulo: "Agregar Planificacion",
-            contenido: (
-                <div>
-                    <p>AGREGAR PLANIFICACION</p>
-                </div>
-            )
-        });
-        setModalShow(true);
-        
+        alert("ver planificacion")
     }
 
     return (
@@ -51,15 +34,6 @@ function Planificacion() {
                 {/*puse un boton normal aca pero hay que agregar toda la logica para traer los años y se muestren los botones por cada uno*/}
                 <button>2025</button>
             </div>
-
-            <ModalFormularios
-                    show={modalShow}
-                    onHide={() => setModalShow(false)}
-                    titulo={modalInfo.titulo}
-                >
-                    {modalInfo.contenido}
-            </ModalFormularios>
-
         </div>
     )
 }

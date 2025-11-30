@@ -21,34 +21,34 @@ function Grupo() {
 
     const [modalShow, setModalShow] = React.useState(false);
 
+    const [grupos, setGrupos] = React.useState([]);
+
     const columnas = ["Sigla", "Nombre", "Unidad Academica", "Director/a", "Vicedirector/a", "Correo Electronico"];
     const filasPrueba = [
         ["S.M.O.P", "Smooth Operator", "Ferrari", "Carlos Sainz JR.", "Charles Leclerc", "ferrari@gmail.com"],
         ["L.I.N.S.I", "Laboratorio de ingenieria en sistemas de informacion", "frlp", "Milagros Crespo", "Martina Garcia", "linsi@hotmail.com"]
     ];
 
-    const navigate = useNavigate();
-
     const [modalInfo, setModalInfo] = React.useState({
         titulo: '',
         contenido: null
     })
 
-/*
+
     useEffect(() => {
         fetchGrupos();
     }, []);
 
     const fetchGrupos = async () => {
-
         try {
             const data = await getGrupos();
             setGrupos(data);
+            console.log(data);
         } catch (error) {
             console.error("Error al obtener los grupos:", error);
         }
     };
-*/
+
 
     function modificarObjetivos() {
         setModalInfo({

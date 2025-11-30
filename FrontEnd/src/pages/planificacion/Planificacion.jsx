@@ -1,3 +1,4 @@
+import React from "react"
 import { useParams } from "react-router-dom"
 import Boton from "../../components/Boton"
 import "./Planificacion.css"

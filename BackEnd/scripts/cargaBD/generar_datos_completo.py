@@ -2,6 +2,9 @@
 Script para generar datos de prueba COMPLETOS desde cero
 Genera un grupo de investigación con proyectos 2023-2026
 """
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import random
 from datetime import date, timedelta

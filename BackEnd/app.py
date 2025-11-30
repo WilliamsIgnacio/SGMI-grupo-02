@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from database import db
@@ -5,8 +8,11 @@ from database import db
 app = Flask(__name__)
 CORS(app) 
 
+# Cargar variables de entorno del archivo .env
+load_dotenv()
+
 #configuracion base de datos
-DATABASE_URI = 'postgresql://postgres.hxrdfvfeiddvydvilrsa:Segundo_Francia_2025@aws-1-us-east-2.pooler.supabase.com:6543/postgres'
+DATABASE_URI = os.getenv('DATABASE_URL')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

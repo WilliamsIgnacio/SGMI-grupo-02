@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import "./Grupo.css";
 
 
@@ -20,6 +20,8 @@ function Grupo() {
         ["S.M.O.P", "Smooth Operator", "Ferrari", "Carlos Sainz JR.", "Charles Leclerc", "ferrari@gmail.com"],
         ["L.I.N.S.I", "Laboratorio de ingenieria en sistemas de informacion", "frlp", "Milagros Crespo", "Martina Garcia", "linsi@hotmail.com"]
     ];
+
+    const navigate = useNavigate();
 
 /*
     useEffect(() => {
@@ -42,7 +44,7 @@ function Grupo() {
     }
 
     function verPlanificacion(){
-        console.log("Ver Planificacion");
+        navigate("planificacion");
     }
 
     function verObjetivos(){

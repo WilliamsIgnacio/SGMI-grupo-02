@@ -10,6 +10,9 @@ import Boton from "../../components/Boton";
 import BotonAgregar from "../../components/BotonAgregar";
 import imagenMas from "../../images/mas.png";
 import ModalFormularios from "../../components/ModalFormularios";
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+
 
 import { getGrupos } from "../../services/GrupoService";
 
@@ -47,6 +50,42 @@ function Grupo() {
     };
 */
 
+    function modificarObjetivos() {
+        setModalInfo({
+            titulo: "Modificar Grupo",
+            contenido: (
+                <div>
+                    <FloatingLabel controlId="floatingTextarea2">
+                        <Form.Control
+                            as="textarea"
+                            placeholder="Objetivos"
+                            style={{ height: '200px' }}
+                        />
+                    </FloatingLabel> 
+                </div>
+            )
+        });
+        setModalShow(true);
+    }
+
+        function modificarObjetivos() {
+        setModalInfo({
+            titulo: "Modificar Grupo",
+            contenido: (
+                <div>
+                    <FloatingLabel controlId="floatingTextarea2">
+                        <Form.Control
+                            as="textarea"
+                            placeholder="Objetivos"
+                            style={{ height: '200px' }}
+                        />
+                    </FloatingLabel> 
+                </div>
+            )
+        });
+        setModalShow(true);
+    }
+
     function agregarGrupo(){
         setModalInfo({
             titulo: "Agregar Grupo",
@@ -68,7 +107,10 @@ function Grupo() {
             titulo: "Objetivos del grupo",
             contenido: (
                 <div>
-                    <p>OBJETIVOS</p>
+                    <p>Aca irian los objetivos</p>
+                    <Boton texto={"Modificar"} accion={modificarObjetivos}>
+                    </Boton>
+
                 </div>
             )
         });
@@ -92,7 +134,9 @@ function Grupo() {
             titulo: "Consejo ejecutivo",
             contenido: (
                 <div>
-                    <p>CONSEJO EJECTUIVO</p>
+                    <p>Avril <br/> Nacho</p>
+                    <Boton texto={"Modificar"} accion={modificarObjetivos}>
+                    </Boton>
                 </div>
             )
         });

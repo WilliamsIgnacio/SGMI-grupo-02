@@ -1,4 +1,5 @@
 from database import db
+from sqlalchemy.orm import relationship
 
 class ActividadDocente(db.Model):
     __tablename__ = 'actividad_docente'
@@ -10,7 +11,10 @@ class ActividadDocente(db.Model):
     
     # FK
     personalId = db.Column('persona', db.Integer, db.ForeignKey('persona.id'))
-    institucionId = db.Column('institucion', db.Integer) 
+    institucionId = db.Column('institucion', db.Integer, db.ForeignKey('institucion.id'))
+    
+    # Relationships
+    institucion_ref = relationship('Institucion', back_populates='actividades_docentes') 
 
     def to_dict(self):
         return {

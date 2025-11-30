@@ -1,4 +1,5 @@
 from database import db
+from sqlalchemy.orm import relationship
 
 class Proyecto(db.Model):
     __tablename__ = 'proyecto'
@@ -15,7 +16,14 @@ class Proyecto(db.Model):
     fechaInicio = db.Column('fecha_inicio', db.Date, nullable=False)
     fechaFin = db.Column('fecha_fin', db.Date, nullable=True)
 
-    grupoId = db.Column('grupo', db.Integer)
+    grupoId = db.Column('grupo', db.Integer, db.ForeignKey('grupo.id'))
+    
+    # Relationships
+    grupo_ref = relationship('Grupo', back_populates='proyectos')
+    proyecto_libros = relationship('ProyectoLibro', back_populates='proyecto_ref')
+    proyecto_revistas = relationship('ProyectoRevista', back_populates='proyecto_ref')
+    proyecto_articulos = relationship('ProyectoArticulo', back_populates='proyecto_ref')
+    distinciones = relationship('Distincion', back_populates='proyecto_ref', foreign_keys='Distincion.proyecto')
 
     def to_dict(self):
         return {

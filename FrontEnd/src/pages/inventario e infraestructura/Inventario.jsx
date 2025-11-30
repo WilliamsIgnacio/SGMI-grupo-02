@@ -6,6 +6,11 @@ import imagenMas from "../../images/mas.png"
 import "./Inventario.css"
 import { Navigate } from "react-router-dom";
 import ModalFormularios from "../../components/ModalFormularios";
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
 
 function Inventario() {
@@ -30,7 +35,45 @@ function Inventario() {
             titulo: "Agregar equipamiento",
             contenido: (
                 <div>
-                    <p>AGREGAR EQUIPAMIENTO</p>
+                    <Form>
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridCodigo">
+                                <Form.Label>Codigo</Form.Label>
+                                <Form.Control type="codigo" placeholder="Codigo del Equipamiento" />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridDenominacion">
+                                <Form.Label>Denominacion</Form.Label>
+                                <Form.Control placeholder="Denominacion del Equipamiento" />
+                            </Form.Group>
+                        </Row>
+                    
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridFecha">
+                                <Form.Label>Fecha de Incorporación</Form.Label>
+                                <Form.Control type="fecha" placeholder="p. ej: 10/11/2025" />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridMonto">
+                                <Form.Label>Monto</Form.Label>
+                                <Form.Control placeholder="p. ej: $3000000" />
+                            </Form.Group>
+                        </Row>
+                    
+                        <Row className="mb-3">
+                            <Form.Label>Descripcion</Form.Label>
+                            <FloatingLabel controlId="floatingTextarea2">
+                                <Form.Control
+                                    as="textarea"
+                                    style={{ height: '100px' }}
+                                />
+                            </FloatingLabel> 
+                        </Row>
+                    
+                        <Button variant="primary" type="submit">
+                            Agregar
+                        </Button>
+                    </Form>
                 </div>
             )
         });
@@ -42,7 +85,40 @@ function Inventario() {
             titulo: "Agregar Bibliografia",
             contenido: (
                 <div>
-                    <p>AGREGAR BIBLIOGRAFIA</p>
+                    <Form>
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridTitulo">
+                                <Form.Label>Título</Form.Label>
+                                <Form.Control type="titulo" placeholder="Titulo" />
+                            </Form.Group>
+                        </Row>
+                        
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridEditorial">
+                                <Form.Label>Editorial</Form.Label>
+                                <Form.Control placeholder="Editorial" />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridFecha">
+                                <Form.Label>Fecha de Incorporación</Form.Label>
+                                <Form.Control type="fecha" placeholder="p. ej: 10/11/2025" />
+                            </Form.Group>
+                        </Row>
+                    
+                        <Row className="mb-3">
+                            <Form.Label>Autores</Form.Label>
+                            <FloatingLabel controlId="floatingTextarea2">
+                                <Form.Control
+                                    as="textarea"
+                                    style={{ height: '75px' }}
+                                />
+                            </FloatingLabel> 
+                        </Row>
+                    
+                        <Button variant="primary" type="submit">
+                            Agregar
+                        </Button>
+                    </Form>
                 </div>
             )
         });
@@ -51,10 +127,10 @@ function Inventario() {
 
     function verDescripcion() {
         setModalInfo({
-            titulo: "vER DESCRIPCION",
+            titulo: "Ver descripcion",
             contenido: (
                 <div>
-                    <p>DESCRIPCION</p>
+                    <p>Aca iria la descripcion</p>
                 </div>
             )
         });

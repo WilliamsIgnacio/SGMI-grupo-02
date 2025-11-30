@@ -12,7 +12,9 @@ import imagenMas from "../../images/mas.png";
 import ModalFormularios from "../../components/ModalFormularios";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 import { getGrupos } from "../../services/GrupoService";
 
@@ -62,15 +64,16 @@ function Grupo() {
                             style={{ height: '200px' }}
                         />
                     </FloatingLabel> 
+                    <button type="submit" className="boton-aceptar-form">Aceptar</button>
                 </div>
             )
         });
         setModalShow(true);
     }
 
-        function modificarObjetivos() {
+    function modificarConsejo() {
         setModalInfo({
-            titulo: "Modificar Grupo",
+            titulo: "Modificar Consejo",
             contenido: (
                 <div>
                     <FloatingLabel controlId="floatingTextarea2">
@@ -79,19 +82,77 @@ function Grupo() {
                             placeholder="Objetivos"
                             style={{ height: '200px' }}
                         />
-                    </FloatingLabel> 
+                    </FloatingLabel>
+                    <button type="button">Aceptar</button>
                 </div>
             )
         });
         setModalShow(true);
     }
 
+    function modificarOrganigrama() {
+        setModalInfo({
+            titulo: "Modificar Organigrama",
+            contenido: (
+                <div>
+                    <FloatingLabel controlId="floatingTextarea2">
+                        <Form.Control
+                            as="textarea"
+                            style={{ height: '200px' }}
+                        />
+                    </FloatingLabel>
+                    <button type="button">Aceptar</button>
+                </div>
+            )
+        });
+        setModalShow(true);
+    }
+
+
     function agregarGrupo(){
         setModalInfo({
             titulo: "Agregar Grupo",
             contenido: (
                 <div>
-                    <p>AGREGAR GRUPO</p>
+                    <Form>
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridSigla">
+                                <Form.Label>Sigla</Form.Label>
+                                <Form.Control type="sigla" placeholder="Sigla del grupo" />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridNombre">
+                                <Form.Label>Nombre</Form.Label>
+                                <Form.Control type="nombreGrupo" placeholder="Nombre del Grupo" />
+                            </Form.Group>
+                        </Row>
+
+                        <Form.Group className="mb-3" controlId="formGridUnidadAcademica">
+                            <Form.Label>Unidad Académica</Form.Label>
+                            <Form.Control placeholder="p. ej: Facultad Regional La Plata" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="formGridEmail">
+                            <Form.Label>Correo Electrónico</Form.Label>
+                            <Form.Control placeholder="correogrupo@gmail.com" />
+                        </Form.Group>
+
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridDirector">
+                            <Form.Label>Director/a</Form.Label>
+                            <Form.Control placeholder="Nombre y Apellido"/>
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridVicedirector">
+                            <Form.Label>Vicedirector/a</Form.Label>
+                            <Form.Control placeholder="Nombre y Apellido"/>
+                            </Form.Group>
+                        </Row>
+
+                        <Button variant="primary" type="submit">
+                            Agregar
+                        </Button>
+                    </Form>
                 </div>
             )
         });
@@ -110,7 +171,6 @@ function Grupo() {
                     <p>Aca irian los objetivos</p>
                     <Boton texto={"Modificar"} accion={modificarObjetivos}>
                     </Boton>
-
                 </div>
             )
         });
@@ -123,6 +183,7 @@ function Grupo() {
             contenido: (
                 <div>
                     <p>ORGANIGRAMA</p>
+                    <Boton texto={"Modificar"} accion={modificarOrganigrama}></Boton>
                 </div>
             )
         });
@@ -135,7 +196,7 @@ function Grupo() {
             contenido: (
                 <div>
                     <p>Avril <br/> Nacho</p>
-                    <Boton texto={"Modificar"} accion={modificarObjetivos}>
+                    <Boton texto={"Modificar"} accion={modificarConsejo}>
                     </Boton>
                 </div>
             )

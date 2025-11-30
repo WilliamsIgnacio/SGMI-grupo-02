@@ -44,9 +44,7 @@ class ControladorInvestigador(MethodView):
                 gradoObj = GradoAcademico.query.filter_by(id=grado).first()
                 if not gradoObj:
                     raise ValueError("Grado Académico no encontrado")
-                
                 investigador.gradoAcademicoId = gradoObj.id
-
             investigador.nombre = data.get('nombre', investigador.nombre)
             investigador.apellido = data.get('apellido', investigador.apellido)
             investigador.horas = data.get('horas', investigador.horas)

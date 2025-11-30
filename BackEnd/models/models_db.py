@@ -39,7 +39,6 @@ class Institucion(db.Model):
         self.pais = pais
     
     # personas = relationship('Personal', back_populates='institucion_ref')
-    persona_grupos = relationship('PersonaGrupo', back_populates='institucion_ref', foreign_keys='PersonaGrupo.institucion')
     revistas = relationship('Revista', back_populates='editorial_ref')
     articulos = relationship('Articulo', back_populates='editorial_ref')
     libros = relationship('Libro', back_populates='editorial_ref')

@@ -28,7 +28,7 @@ class Grupo(db.Model):
         self.unidad_academica = unidad_academica
     
     proyectos = relationship('Proyecto', back_populates='grupo_ref')
-    persona_grupos = relationship('PersonaGrupo', back_populates='grupo_ref')
+    persona_grupos = relationship('PersonaGrupo', back_populates='grupo_ref', cascade="all, delete-orphan")
     equipamientos = relationship('Equipamiento', back_populates='grupo_ref')
     bibliografias = relationship('Bibliografia', back_populates='grupo_ref')
     participaciones = relationship('Participacion', back_populates='grupo_ref')

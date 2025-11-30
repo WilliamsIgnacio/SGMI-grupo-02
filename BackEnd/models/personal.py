@@ -15,6 +15,7 @@ class Personal(db.Model):
     #Relaciones
     grado = db.relationship('GradoAcademico', backref='personales')
     actividadesDocente = db.relationship('ActividadDocente', backref='personal', lazy=True)
+    persona_grupos = db.relationship('PersonaGrupo', back_populates='persona_ref', cascade="all, delete-orphan")
 
     #OBJ Type
     objectType = db.Column('object_type', db.String(50))

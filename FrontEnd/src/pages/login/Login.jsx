@@ -3,6 +3,7 @@ import { Form, Row, Col } from 'react-bootstrap';
 import "./Login.css";
 import Boton from "../../components/Boton";
 import imagenLogin from "../../images/imagen login.jpeg";
+import Image from "react-bootstrap/Image";
 
 function Login() {
 
@@ -13,26 +14,28 @@ function Login() {
     return (
         <div className="container-fluid">
             <h1>Bienvenido de vuelta!</h1>
-            <h3>Sistema de Gestión de Memorias de Grupos y Centros de Investigación</h3>
+            <p>Sistema de Gestión de Memorias de<br></br> Grupos y Centros de Investigación</p>
+
             <div className="row container-fluid">
-                <div className="col-3">
+                <div className="col-3 login-container">
                     <Form>
-                        <Form.Group className="mb-3" controlId="emailLogin">
+                        <Form.Group className="mb-2" controlId="emailLogin">
                             <Form.Label>Email</Form.Label>
                             <Form.Control type="email" placeholder="tumail@ejemplo.com" />
                         </Form.Group>
                     
-                        <Form.Group className="mb-3" controlId="contraseñaLogin">
+                        <Form.Group className="mb-2" controlId="contraseñaLogin">
                             <Form.Label>Contraseña</Form.Label>
                             <Form.Control type="password" placeholder="contraseña" />
                         </Form.Group>
                     </Form>
+                    <Boton className="boton-iniciar-sesion" texto={"Iniciar Sesión"} accion={iniciarSesion}></Boton>
                 </div>
-                <div className="col-9">
-                    <img className="imagen-logo" src={imagenLogin} alt="imagen login" width={"950px"} height={"600px"}/>
+                <div className="col imagen">
+                    <Image src={imagenLogin} alt="Imagen del login"></Image>
                 </div>
             </div>
-            <Boton texto={"Iniciar Sesión"} accion={iniciarSesion}></Boton>
+            
         </div>
     )
 }

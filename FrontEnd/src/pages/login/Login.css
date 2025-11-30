@@ -8,3 +8,13 @@
 .imagen {
     justify-content: center;
 }
+
+.login-container {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.boton-iniciar-sesion {
+    background-color: #2C2C2C;
+}

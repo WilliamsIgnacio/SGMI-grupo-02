@@ -25,28 +25,7 @@ function App() {
 	return (
 		<BrowserRouter>
 			<div>
-        <Navbar/>  
-				<ul>
-					<li>
-						<NavLink to="/grupo">grupo</NavLink>
-					</li>
-					<li>
-						<NavLink to="/grupo/planificacion/inventario">inventario</NavLink>
-					</li>
-					<li>
-						<NavLink to="/login">login</NavLink>
-					</li>
-					<li>
-						<NavLink to="/grupo/planificacion">planificacion</NavLink>
-					</li>
-					<li>
-						<NavLink to="/grupo/planificacion/proyecto">proyecto</NavLink>
-					</li>
-
-					<li>
-						<NavLink to="/grupo/planificacion/personal">personal</NavLink>
-					</li>
-				</ul>
+				<Navbar></Navbar>
 			</div>
 			<Routes>
 				<Route path="/grupo" element={ <Grupo/> }></Route>

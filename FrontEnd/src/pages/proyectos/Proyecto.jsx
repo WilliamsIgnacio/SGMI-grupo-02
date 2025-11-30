@@ -33,8 +33,11 @@ function Proyecto() {
         <div>
             <div>
                 <h1>
-                    proyectos
+                    Proyectos
                 </h1>
+                <p>
+                    Grupo S.M.O.P
+                </p>
             </div>
             <div>
                 <div className="row container-fluid">
@@ -59,22 +62,19 @@ function Proyecto() {
                 </div>
 
                 <div className="row container-fluid">
+                    <div className="col-4">
+                        <Boton texto={"Volver"}></Boton>
+                    </div>
                     <div className="col-3">
                         <Boton texto={"Ver Descripcion"} accion={verDescripcion}></Boton>
                     </div>
                     <div className="col-3">
                         <Boton texto={"Ver Logros"} accion={verLogros}></Boton>
                     </div>
-                    <div className="col-3">
+                    <div className="col-2">
                         <Boton texto={"Ver Dificultades"} accion={verDificultades}></Boton>
                     </div>
-                </div>
-                <div className="row container-fluid">
-                    <div className="col-1">
-                        <button>
-                            Volver
-                        </button>
-                    </div>
+                    
                 </div>
             </div>
         </div>    

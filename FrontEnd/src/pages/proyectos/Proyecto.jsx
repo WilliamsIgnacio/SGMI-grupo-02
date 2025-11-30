@@ -6,27 +6,68 @@ import BotonAgregar from "../../components/BotonAgregar";
 import Tabla from "../../components/Tabla";
 import imagenMas from "../../images/mas.png"
 import "./Proyecto.css";
+import ModalFormularios from "../../components/ModalFormularios";
 
 function Proyecto() {
+
+    const [modalShow, setModalShow] = React.useState(false);
 
     const columnas = ["Codigo", "Nombre", "Fecha de Inicio", "Fecha de Fin"];
     const datosPrueba = [["001", "Curso 1", "29-10-25", "31-12-25"], ["002", "Curso 2", "10-11-25", "31-03-26"]];
 
+    const [modalInfo, setModalInfo] = React.useState({
+        titulo: '',
+        contenido: null
+    })
+    
+
     function agregarProyecto() {
-        return alert("agregar proyecto");      
+        setModalInfo({
+            titulo: "Agregar Proyecto",
+            contenido: (
+                <div>
+                    <p>AGREGAR PROYECTO</p>
+                </div>
+            )
+        });
+        setModalShow(true);     
     }
 
     function verDescripcion() {
-        return alert("ver descripcion");
+        setModalInfo({
+            titulo: "Descripcion",
+            contenido: (
+                <div>
+                    <p>VER DESCRIPCION</p>
+                </div>
+            )
+        });
+        setModalShow(true);
     }
     
     function verLogros() {
-        return alert("ver logros");
+        setModalInfo({
+            titulo: "Logros",
+            contenido: (
+                <div>
+                    <p>VER LOGROS</p>
+                </div>
+            )
+        });
+        setModalShow(true);
         
     }
 
     function verDificultades() {
-        return alert("ver dificultades");
+        setModalInfo({
+            titulo: "Dificultades",
+            contenido: (
+                <div>
+                    <p>VER DIFICULTADES</p>
+                </div>
+            )
+        });
+        setModalShow(true);
     }
 
     return (
@@ -76,6 +117,14 @@ function Proyecto() {
                     </div>
                     
                 </div>
+
+                <ModalFormularios
+                    show={modalShow}
+                    onHide={() => setModalShow(false)}
+                    titulo={modalInfo.titulo}
+                >
+                    {modalInfo.contenido}
+                </ModalFormularios>
             </div>
         </div>    
     )

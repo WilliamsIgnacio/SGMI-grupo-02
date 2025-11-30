@@ -7,22 +7,54 @@ import Boton from "../../components/Boton";
 import BotonAgregar from "../../components/BotonAgregar";
 import imagenMas from "../../images/mas.png"
 import "./Personal.css"
+import ModalFormularios from "../../components/ModalFormularios";
 
 function Personal() {
+
+    const [modalShow, setModalShow] = React.useState(false);
 
     const columnas = ["Codigo", "Nombre", "Apellido", "Horas Semanales", "Area"];
     const datosPrueba = [["001", "Carla", "Sanchez", "40", "Soporte"], ["002", "Carlos", "Sainz", "20", "Profesional"], ["003", "Carolina", "Suarez", "30", "Profesional"]];
 
+    const [modalInfo, setModalInfo] = React.useState({
+        titulo: '',
+        contenido: null
+    })
+
     function agregarPersonal() {
-        return alert("agregar personal");      
+        setModalInfo({
+            titulo: "Agregar Personal",
+            contenido: (
+                <div>
+                    <p>AGREGAR PERSONAL</p>
+                </div>
+            )
+        });
+        setModalShow(true);      
     }
 
     function verDescripcion() {
-        return alert("ver descripcion");
+        setModalInfo({
+            titulo: "dESCRIPCIoN",
+            contenido: (
+                <div>
+                    <p>VER DESCRIPCION</p>
+                </div>
+            )
+        });
+        setModalShow(true);
     }
     
     function desvincular() {
-        return alert("desvincular");
+        setModalInfo({
+            titulo: "Desvincular",
+            contenido: (
+                <div>
+                    <p>DESVINCULAR PERSONAL</p>
+                </div>
+            )
+        });
+        setModalShow(true);
         
     }
 
@@ -70,6 +102,14 @@ function Personal() {
                         <Boton texto={"Desvincular"} accion={desvincular}></Boton>
                     </div>
                 </div>
+
+                <ModalFormularios
+                    show={modalShow}
+                    onHide={() => setModalShow(false)}
+                    titulo={modalInfo.titulo}
+                >
+                    {modalInfo.contenido}
+                </ModalFormularios>
             </div>
         </div> 
     )

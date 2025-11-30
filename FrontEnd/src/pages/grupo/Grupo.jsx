@@ -26,6 +26,11 @@ function Grupo() {
 
     const navigate = useNavigate();
 
+    const [modalInfo, setModalInfo] = React.useState({
+        titulo: '',
+        contenido: null
+    })
+
 /*
     useEffect(() => {
         fetchGrupos();
@@ -43,7 +48,15 @@ function Grupo() {
 */
 
     function agregarGrupo(){
-        console.log("agregar grupo");
+        setModalInfo({
+            titulo: "Agregar Grupo",
+            contenido: (
+                <div>
+                    <p>AGREGAR GRUPO</p>
+                </div>
+            )
+        });
+        setModalShow(true);
     }
 
     function verPlanificacion(){
@@ -51,15 +64,39 @@ function Grupo() {
     }
 
     function verObjetivos(){
-        console.log("Ver objetivos");
+        setModalInfo({
+            titulo: "Objetivos del grupo",
+            contenido: (
+                <div>
+                    <p>OBJETIVOS</p>
+                </div>
+            )
+        });
+        setModalShow(true);
     }
 
     function verOrganigrama(){
-        console.log("Ver Organigrama");
+        setModalInfo({
+            titulo: "Organigrama del Grupo",
+            contenido: (
+                <div>
+                    <p>ORGANIGRAMA</p>
+                </div>
+            )
+        });
+        setModalShow(true);
     }
 
     function verConsejoEjecutivo(){
-        console.log("Ver Consejo Ejecutivo");
+        setModalInfo({
+            titulo: "Consejo ejecutivo",
+            contenido: (
+                <div>
+                    <p>CONSEJO EJECTUIVO</p>
+                </div>
+            )
+        });
+        setModalShow(true);
     }
 
     return (
@@ -99,8 +136,14 @@ function Grupo() {
                     <div className="col-3">
                         <Boton texto={"Ver Consejo ejecutivo"} accion={verConsejoEjecutivo}></Boton>
                     </div>
-                </div>
-                
+                </div> 
+                <ModalFormularios
+                    show={modalShow}
+                    onHide={() => setModalShow(false)}
+                    titulo={modalInfo.titulo}
+                >
+                    {modalInfo.contenido}
+                </ModalFormularios>
             </div>
         </div>
     )

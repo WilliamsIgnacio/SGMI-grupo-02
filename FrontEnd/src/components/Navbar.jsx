@@ -23,6 +23,7 @@ function navbar() {
                         style={{ maxHeight: '100px' }}
                         navbarScroll
                     >
+                        <Nav.Link href="/grupo/planificacion">Planificacion</Nav.Link>
                         <Nav.Link href="/grupo/planificacion/personal">Personal</Nav.Link>
                         <Nav.Link href="/grupo/planificacion/proyecto">Proyectos</Nav.Link>
                         <Nav.Link href="/grupo/planificacion/inventario">Equipamiento</Nav.Link>

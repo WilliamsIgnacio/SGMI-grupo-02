@@ -47,6 +47,7 @@ from routes.ControladorInventario import inventario_bp
 from routes.controladorInvestigador import investigador_bp
 from routes.ControladorOrganizaciones import org_bp
 from routes.ControladorParticipacion import participacion_bp
+from routes.ControladorPersonal import personal_bp
 from routes.controladorProfesional import profesional_bp
 from routes.controladorProyecto import proyecto_bp
 from routes.controladorSoporte import soporte_bp
@@ -62,6 +63,7 @@ app.register_blueprint(inventario_bp)  # Already has url_prefix
 app.register_blueprint(investigador_bp, url_prefix='/api/investigadores')
 app.register_blueprint(org_bp)  # Already has url_prefix
 app.register_blueprint(participacion_bp)  # Already has url_prefix
+app.register_blueprint(personal_bp, url_prefix='/api/personal')
 app.register_blueprint(profesional_bp, url_prefix='/api/profesionales')
 app.register_blueprint(proyecto_bp, url_prefix='/api/proyectos')
 app.register_blueprint(soporte_bp, url_prefix='/api/soportes')

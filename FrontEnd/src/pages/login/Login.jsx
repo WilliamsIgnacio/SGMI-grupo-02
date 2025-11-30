@@ -13,8 +13,10 @@ function Login() {
 
     return (
         <div className="container-fluid">
-            <h1>Bienvenido de vuelta!</h1>
+            <h1 className="titulo">SGMI</h1>
             <p>Sistema de Gestión de Memorias de<br></br> Grupos y Centros de Investigación</p>
+            <h3>¡Bienvenido de vuelta!</h3>
+            
 
             <div className="row container-fluid">
                 <div className="col-3 login-container">

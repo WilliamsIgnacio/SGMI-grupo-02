@@ -18,9 +18,6 @@ function ModalFormularios(props) {
             <Modal.Body>
                 {props.children}
             </Modal.Body>
-            <Modal.Footer>
-                <Button onClick={props.onHide}>Cerrar</Button>
-            </Modal.Footer>
         </Modal>
     );
 }

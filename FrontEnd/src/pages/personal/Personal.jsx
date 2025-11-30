@@ -8,6 +8,11 @@ import BotonAgregar from "../../components/BotonAgregar";
 import imagenMas from "../../images/mas.png"
 import "./Personal.css"
 import ModalFormularios from "../../components/ModalFormularios";
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
 function Personal() {
 
@@ -26,7 +31,72 @@ function Personal() {
             titulo: "Agregar Personal",
             contenido: (
                 <div>
-                    <p>AGREGAR PERSONAL</p>
+                    <Form>
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridNombre">
+                                <Form.Label>Seleccione tipo de identificacion</Form.Label>
+                                <Form.Select aria-label="Documento de Identidad">
+                                <option value="1">DNI</option>
+                                <option value="2">Pasaporte</option>
+                                </Form.Select>
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridDocumento">
+                                <Form.Label>Numero de Identificacion</Form.Label>
+                                <Form.Control type="documento" placeholder="p. ej: 46786123" />
+                            </Form.Group>
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridNombre">
+                                <Form.Label>Nombre</Form.Label>
+                                <Form.Control placeholder="Nombre" />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridApellido">
+                                <Form.Label>Apellido</Form.Label>
+                                <Form.Control placeholder="Apellido" />
+                            </Form.Group>
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridHoras">
+                            <Form.Label>Horas Semanales</Form.Label>
+                            <Form.Control placeholder="p. ej: 45"/>
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridNombre">
+                                <Form.Label>Perfil</Form.Label>
+                                <Form.Select aria-label="Documento de Identidad">
+                                <option value="1">Seleccione un perfil</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Form.Label>Descripcion</Form.Label>
+                            <FloatingLabel controlId="floatingTextarea2">
+                                <Form.Control
+                                    as="textarea"
+                                    style={{ height: '75px' }}
+                                />
+                            </FloatingLabel> 
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Form.Label>Especialidad</Form.Label>
+                            <FloatingLabel controlId="floatingTextarea2">
+                                <Form.Control
+                                    as="textarea"
+                                    style={{ height: '45px' }}
+                                />
+                            </FloatingLabel> 
+                        </Row>
+
+                        <Button variant="primary" type="submit">
+                            Agregar
+                        </Button>
+                    </Form>
                 </div>
             )
         });
@@ -44,13 +114,38 @@ function Personal() {
         });
         setModalShow(true);
     }
+
+    function desvincularPersonal() {
+        setModalInfo({
+            titulo: "Desvincular",
+            contenido: (
+                <div>
+                    <Form>
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridDocumento">
+                                <Form.Label>Fecha de Desvinculación</Form.Label>
+                                <Form.Control type="documento" placeholder="p. ej: 10/11/2025" />
+                            </Form.Group>
+                        </Row>
+                        <Button variant="primary" type="submit">
+                            Agregar
+                        </Button>
+                        <Button variant="primary" type="submit">
+                            Cancelar
+                        </Button>
+                    </Form>
+                </div>
+            )
+        })
+    }
     
     function desvincular() {
         setModalInfo({
             titulo: "Desvincular",
             contenido: (
                 <div>
-                    <p>DESVINCULAR PERSONAL</p>
+                    Aca irian los datos de la persona que se quiere desvincular
+                    <Boton texto={"desvincular"} accion={desvincularPersonal}></Boton>
                 </div>
             )
         });

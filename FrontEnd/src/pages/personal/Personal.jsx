@@ -33,6 +33,9 @@ function Personal() {
                 <h1>
                     Personal
                 </h1>
+                <p>
+                    Grupo S.M.O.P
+                </p>
             </div>
             <div>
                 <div className="row container-fluid">
@@ -57,18 +60,14 @@ function Personal() {
                 </div>
 
                 <div className="row container-fluid">
-                    <div className="col-3">
+                    <div className="col">
+                        <Boton texto={"Volver"}></Boton>
+                    </div>
+                    <div className="col">
                         <Boton texto={"Ver Descripcion"} accion={verDescripcion}></Boton>
                     </div>
-                    <div className="col-3">
+                    <div className="col">
                         <Boton texto={"Desvincular"} accion={desvincular}></Boton>
-                    </div>
-                </div>
-                <div className="row container-fluid">
-                    <div className="col-1">
-                        <button>
-                            Volver
-                        </button>
                     </div>
                 </div>
             </div>

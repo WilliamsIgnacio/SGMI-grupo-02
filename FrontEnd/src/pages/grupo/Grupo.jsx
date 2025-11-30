@@ -1,19 +1,22 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom"
 import "./Grupo.css";
+import { useState } from "react";
 
 
 import CabeceraTabla from "../../components/CabeceraTabla";
 import Tabla from "../../components/Tabla";
 import Boton from "../../components/Boton";
 import BotonAgregar from "../../components/BotonAgregar";
-import imagenMas from "../../images/mas.png"
-//import Paginacion from "../../components/Paginacion";
+import imagenMas from "../../images/mas.png";
+import ModalFormularios from "../../components/ModalFormularios";
 
 import { getGrupos } from "../../services/GrupoService";
 
 
 function Grupo() {
+
+    const [modalShow, setModalShow] = React.useState(false);
 
     const columnas = ["Sigla", "Nombre", "Unidad Academica", "Director/a", "Vicedirector/a", "Correo Electronico"];
     const filasPrueba = [
@@ -95,6 +98,7 @@ function Grupo() {
                         <Boton texto={"Ver Consejo ejecutivo"} accion={verConsejoEjecutivo}></Boton>
                     </div>
                 </div>
+                
             </div>
         </div>
     )

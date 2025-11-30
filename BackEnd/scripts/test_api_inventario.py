@@ -79,29 +79,22 @@ def run_tests():
     print("\n--- 3. BIBLIOGRAFÍA ---")
     
     # 3.1 Crear Bibliografía
-    # ¡CUIDADO! El código del controlador espera 'referencia', pero el modelo tiene 'titulo', 'autores', 'editorial', 'fecha'.
-    # Analizando ControladorInventario.py:
-    # create_bibliografia recibe 'referencia', 'descripcion', 'grupo'.
-    # PERO el modelo Bibliografia.__init__ pide titulo, autores, editorial, fecha.
-    # ==> AQUÍ HAY UN BUG POTENCIAL EN EL CÓDIGO DE TU COMPAÑERO.
-    # El controlador intenta crear: Bibliografia(referencia=..., descripcion=..., grupo=...)
-    # Pero el modelo espera: Bibliografia(titulo, autores, editorial, fecha, grupo)
-    # Vamos a probar enviar lo que pide el CONTROLADOR, y si falla, confirmaremos el bug.
+    # Campos correctos según el modelo: titulo, autores, editorial, fecha, grupo
     
     payload_bib = {
-        "referencia": "Paper de IA 2023",
-        "descripcion": "Publicación importante",
+        "titulo": "Inteligencia Artificial en Aplicaciones Gubernamentales",
+        "autores": "García, J., Martínez, A.",
+        "editorial": "Editorial Tecnológica",
+        "fecha": "2023-06-15",
         "grupo": grupo_id
     }
     
     res = requests.post(f'{BASE_URL}/inventario/bibliografia', json=payload_bib, headers=HEADERS)
     
-    if res.status_code == 500:
-        print("❌ FALLÓ Crear Bibliografía (Esperado: Bug de discrepancia Modelo vs Controlador)")
-        print("   -> El controlador intenta instanciar Bibliografia con campos incorrectos.")
-        print("   -> Sáltate al paso de limpieza o intenta arreglar el controlador primero.")
+    if not print_result("Crear Bibliografía", res):
+        print("   -> ⚠️ Error al crear bibliografía")
+        bib_id = None
     else:
-        print_result("Crear Bibliografía", res)
         bib_id = res.json().get('id')
 
         # 3.2 Listar

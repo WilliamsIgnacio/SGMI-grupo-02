@@ -1,474 +1,162 @@
-"""Controlador de Participacion - API endpoints for managing participations/collaborations.
+"""Controlador de Participacion."""
 
-Uses SQLAlchemy ORM models from models to handle CRUD operations
-on Participacion, ParticipacionPersona, and related entities.
-"""
-
-import os
-from datetime import date
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, request, jsonify
+from database import db
 
 # Import ORM models
-from database import db
-from models.models_db import Participacion, ParticipacionPersona, Institucion
+from models.models_db import Participacion, ParticipacionPersona, Institucion, RolParticipacion
 from models.grupo import Grupo
 from models.personal import Personal as Persona
 
-# Create blueprint for participation management routes
 participacion_bp = Blueprint('participacion', __name__, url_prefix='/api/participacion')
-
-# Initialize database connection
-def build_db_url():
-    database_url = os.getenv('DATABASE_URL')
-    if database_url:
-        return database_url
-    user = os.getenv('PGUSER', '')
-    password = os.getenv('PGPASSWORD', '')
-    host = os.getenv('PGHOST', 'localhost')
-    port = os.getenv('PGPORT', '5432')
-    db = os.getenv('PGDATABASE', '')
-    if user and password and db:
-        return f'postgresql://{user}:{password}@{host}:{port}/{db}'
-    return None
-
-
-DB_URL = build_db_url() or "postgresql://postgres:Segundo_Francia_2025@db.hxrdfvfeiddvydvilrsa.supabase.co:5432/postgres"
-engine = create_engine(DB_URL)
-SessionLocal = sessionmaker(bind=engine)
-
-
-def get_session():
-    """Return a new database session."""
-    return SessionLocal()
-
 
 # ============ PARTICIPACION CRUD ENDPOINTS ============
 
 @participacion_bp.route('', methods=['GET'])
 def list_participaciones():
-    """List all participations."""
-    session = get_session()
     try:
-        # Optional filters
         grupo_id = request.args.get('grupo_id', type=int)
-        institucion_id = request.args.get('institucion_id', type=int)
-        
-        query = session.query(Participacion)
+        query = db.session.query(Participacion)
         
         if grupo_id:
             query = query.filter(Participacion.grupo == grupo_id)
-        if institucion_id:
-            query = query.filter(Participacion.institucion == institucion_id)
-        
-        participaciones = query.all()
         
         result = []
-        for p in participaciones:
+        for p in query.all():
             result.append({
                 'id': p.id,
                 'grupo_id': p.grupo,
                 'institucion_id': p.institucion,
                 'rol_id': p.rol,
-                'fecha_inicio': p.fecha_inicio.isoformat() if p.fecha_inicio else None,
-                'fecha_fin': p.fecha_fin.isoformat() if p.fecha_fin else None,
-                'descripcion': p.descripcion
+                'personal_id': p.personal
             })
-        
         return jsonify(result), 200
     except Exception as e:
         return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
 
 @participacion_bp.route('', methods=['POST'])
 def create_participacion():
-    """Create a new participation."""
     data = request.get_json(silent=True)
-    if not data:
-        return jsonify({'success': False, 'message': 'Invalid JSON'}), 400
+    if not data: return jsonify({'success': False, 'message': 'Invalid JSON'}), 400
     
-    required = ['grupo', 'institucion', 'rol']
+    required = ['grupo', 'institucion', 'rol', 'persona']
     missing = [f for f in required if f not in data]
-    if missing:
-        return jsonify({'success': False, 'message': f'Missing fields: {missing}'}), 400
+    if missing: return jsonify({'success': False, 'message': f'Missing fields: {missing}'}), 400
     
-    session = get_session()
     try:
-        # Verify references
-        grupo = session.query(Grupo).filter(Grupo.id == data['grupo']).first()
-        if not grupo:
+        # Validaciones de existencia
+        if not db.session.query(Grupo).get(data['grupo']):
             return jsonify({'success': False, 'message': 'Grupo not found'}), 404
-        
-        institucion = session.query(Institucion).filter(Institucion.id == data['institucion']).first()
-        if not institucion:
+        if not db.session.query(Institucion).get(data['institucion']):
             return jsonify({'success': False, 'message': 'Institucion not found'}), 404
-        
-        rol = session.query(RolParticipacion).filter(RolParticipacion.id == data['rol']).first()
-        if not rol:
-            return jsonify({'success': False, 'message': 'RolParticipacion not found'}), 404
+        if not db.session.query(RolParticipacion).get(data['rol']):
+            return jsonify({'success': False, 'message': 'Rol not found'}), 404
+        if not db.session.query(Persona).get(data['persona']):
+            return jsonify({'success': False, 'message': 'Persona not found'}), 404
         
         participacion = Participacion(
             grupo=data['grupo'],
             institucion=data['institucion'],
             rol=data['rol'],
-            fecha_inicio=date.fromisoformat(data['fecha_inicio']) if data.get('fecha_inicio') else None,
-            fecha_fin=date.fromisoformat(data['fecha_fin']) if data.get('fecha_fin') else None,
-            descripcion=data.get('descripcion')
+            personal=data['persona']
         )
-        session.add(participacion)
-        session.commit()
+        db.session.add(participacion)
+        db.session.commit()
         
-        return jsonify({
-            'success': True,
-            'message': 'Participacion created',
-            'id': participacion.id
-        }), 201
+        return jsonify({'success': True, 'message': 'Participacion created', 'id': participacion.id}), 201
     except IntegrityError:
-        session.rollback()
+        db.session.rollback()
         return jsonify({'success': False, 'message': 'Integrity error'}), 409
-    except ValueError as ve:
-        session.rollback()
-        return jsonify({'success': False, 'message': f'Invalid value: {str(ve)}'}), 400
     except Exception as e:
-        session.rollback()
+        db.session.rollback()
         return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
 
 @participacion_bp.route('/<int:participacion_id>', methods=['GET'])
 def get_participacion(participacion_id):
-    """Get details of a specific participation."""
-    session = get_session()
     try:
-        participacion = session.query(Participacion).filter(
-            Participacion.id == participacion_id
-        ).first()
-        
-        if not participacion:
-            return jsonify({'success': False, 'message': 'Participacion not found'}), 404
+        p = db.session.query(Participacion).get(participacion_id)
+        if not p: return jsonify({'success': False, 'message': 'Not found'}), 404
         
         return jsonify({
-            'id': participacion.id,
-            'grupo_id': participacion.grupo,
-            'institucion_id': participacion.institucion,
-            'rol_id': participacion.rol,
-            'fecha_inicio': participacion.fecha_inicio.isoformat() if participacion.fecha_inicio else None,
-            'fecha_fin': participacion.fecha_fin.isoformat() if participacion.fecha_fin else None,
-            'descripcion': participacion.descripcion
+            'id': p.id,
+            'grupo_id': p.grupo,
+            'institucion_id': p.institucion,
+            'rol_id': p.rol,
+            'personal_id': p.personal
         }), 200
     except Exception as e:
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @participacion_bp.route('/<int:participacion_id>', methods=['PUT'])
 def update_participacion(participacion_id):
-    """Update a participation."""
     data = request.get_json(silent=True)
-    if not data:
-        return jsonify({'success': False, 'message': 'Invalid JSON'}), 400
-    
-    session = get_session()
     try:
-        participacion = session.query(Participacion).filter(
-            Participacion.id == participacion_id
-        ).first()
+        p = db.session.query(Participacion).get(participacion_id)
+        if not p: return jsonify({'success': False, 'message': 'Not found'}), 404
         
-        if not participacion:
-            return jsonify({'success': False, 'message': 'Participacion not found'}), 404
-        
-        # Verify references if being updated
-        if 'grupo' in data:
-            grupo = session.query(Grupo).filter(Grupo.id == data['grupo']).first()
-            if not grupo:
-                return jsonify({'success': False, 'message': 'Grupo not found'}), 404
-        
-        if 'institucion' in data:
-            institucion = session.query(Institucion).filter(Institucion.id == data['institucion']).first()
-            if not institucion:
-                return jsonify({'success': False, 'message': 'Institucion not found'}), 404
-        
-        if 'rol' in data:
-            rol = session.query(RolParticipacion).filter(RolParticipacion.id == data['rol']).first()
-            if not rol:
-                return jsonify({'success': False, 'message': 'RolParticipacion not found'}), 404
-        
-        # Update allowed fields
-        allowed_fields = {
-            'grupo': int,
-            'institucion': int,
-            'rol': int,
-            'fecha_inicio': lambda x: date.fromisoformat(x) if x else None,
-            'fecha_fin': lambda x: date.fromisoformat(x) if x else None,
-            'descripcion': str
-        }
-        
-        for field, field_type in allowed_fields.items():
-            if field in data:
-                if field in ['fecha_inicio', 'fecha_fin']:
-                    setattr(participacion, field, field_type(data[field]))
-                else:
-                    setattr(participacion, field, data[field])
-        
-        session.commit()
-        return jsonify({'success': True, 'message': 'Participacion updated'}), 200
-    except ValueError as ve:
-        session.rollback()
-        return jsonify({'success': False, 'message': f'Invalid value: {str(ve)}'}), 400
-    except Exception as e:
-        session.rollback()
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
+        # Actualizar Grupo
+        if 'grupo' in data: 
+            grupo = db.session.query(Grupo).get(data['grupo'])
+            if not grupo: return jsonify({'success': False, 'message': 'Grupo not found'}), 404
+            p.grupo = data['grupo']
 
+        # Actualizar Institución
+        if 'institucion' in data: 
+            instit = db.session.query(Institucion).get(data['institucion'])
+            if not instit: return jsonify({'success': False, 'message': 'Institucion not found'}), 404
+            p.institucion = data['institucion']
+
+        # Actualizar Rol
+        if 'rol' in data: 
+            rol = db.session.query(RolParticipacion).get(data['rol'])
+            if not rol: return jsonify({'success': False, 'message': 'Rol not found'}), 404
+            p.rol = data['rol']
+        
+        # --- NUEVO: Actualizar Persona ---
+        if 'persona' in data:
+            persona = db.session.query(Persona).get(data['persona'])
+            if not persona: return jsonify({'success': False, 'message': 'Persona not found'}), 404
+            p.personal = data['persona']
+        
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Updated'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @participacion_bp.route('/<int:participacion_id>', methods=['DELETE'])
 def delete_participacion(participacion_id):
-    """Delete a participation."""
-    session = get_session()
     try:
-        participacion = session.query(Participacion).filter(
-            Participacion.id == participacion_id
-        ).first()
-        
-        if not participacion:
-            return jsonify({'success': False, 'message': 'Participacion not found'}), 404
-        
-        session.delete(participacion)
-        session.commit()
-        return jsonify({'success': True, 'message': 'Participacion deleted'}), 200
+        p = db.session.query(Participacion).get(participacion_id)
+        if not p: return jsonify({'success': False, 'message': 'Not found'}), 404
+        db.session.delete(p)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Deleted'}), 200
     except Exception as e:
-        session.rollback()
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
 
-
-# ============ PARTICIPACION FILTERING ENDPOINTS ============
-
-@participacion_bp.route('/grupo/<int:grupo_id>', methods=['GET'])
-def get_participaciones_by_grupo(grupo_id):
-    """Get all participations for a specific grupo."""
-    session = get_session()
-    try:
-        # Verify grupo exists
-        grupo = session.query(Grupo).filter(Grupo.id == grupo_id).first()
-        if not grupo:
-            return jsonify({'success': False, 'message': 'Grupo not found'}), 404
-        
-        participaciones = session.query(Participacion).filter(
-            Participacion.grupo == grupo_id
-        ).all()
-        
-        result = []
-        for p in participaciones:
-            result.append({
-                'id': p.id,
-                'institucion_id': p.institucion,
-                'rol_id': p.rol,
-                'fecha_inicio': p.fecha_inicio.isoformat() if p.fecha_inicio else None,
-                'fecha_fin': p.fecha_fin.isoformat() if p.fecha_fin else None,
-                'descripcion': p.descripcion
-            })
-        
-        return jsonify(result), 200
-    except Exception as e:
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
-
-@participacion_bp.route('/institucion/<int:institucion_id>', methods=['GET'])
-def get_participaciones_by_institucion(institucion_id):
-    """Get all participations for a specific institucion."""
-    session = get_session()
-    try:
-        # Verify institucion exists
-        institucion = session.query(Institucion).filter(Institucion.id == institucion_id).first()
-        if not institucion:
-            return jsonify({'success': False, 'message': 'Institucion not found'}), 404
-        
-        participaciones = session.query(Participacion).filter(
-            Participacion.institucion == institucion_id
-        ).all()
-        
-        result = []
-        for p in participaciones:
-            result.append({
-                'id': p.id,
-                'grupo_id': p.grupo,
-                'rol_id': p.rol,
-                'fecha_inicio': p.fecha_inicio.isoformat() if p.fecha_inicio else None,
-                'fecha_fin': p.fecha_fin.isoformat() if p.fecha_fin else None,
-                'descripcion': p.descripcion
-            })
-        
-        return jsonify(result), 200
-    except Exception as e:
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
-
-# ============ PARTICIPACION PERSONAS ENDPOINTS ============
-
-@participacion_bp.route('/<int:participacion_id>/personas', methods=['GET'])
-def get_participacion_personas(participacion_id):
-    """Get all personas involved in a participation."""
-    session = get_session()
-    try:
-        # Verify participacion exists
-        participacion = session.query(Participacion).filter(
-            Participacion.id == participacion_id
-        ).first()
-        
-        if not participacion:
-            return jsonify({'success': False, 'message': 'Participacion not found'}), 404
-        
-        pp_list = session.query(ParticipacionPersona).filter(
-            ParticipacionPersona.participacion == participacion_id
-        ).all()
-        
-        result = []
-        for pp in pp_list:
-            result.append({
-                'id': pp.id,
-                'persona_id': pp.persona,
-                'participacion_id': pp.participacion
-            })
-        
-        return jsonify(result), 200
-    except Exception as e:
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
-
-@participacion_bp.route('/<int:participacion_id>/personas', methods=['POST'])
-def add_persona_to_participacion(participacion_id):
-    """Add a persona to a participation."""
-    data = request.get_json(silent=True)
-    if not data:
-        return jsonify({'success': False, 'message': 'Invalid JSON'}), 400
-    
-    if 'persona' not in data:
-        return jsonify({'success': False, 'message': 'Missing field: persona'}), 400
-    
-    session = get_session()
-    try:
-        # Verify participacion exists
-        participacion = session.query(Participacion).filter(
-            Participacion.id == participacion_id
-        ).first()
-        
-        if not participacion:
-            return jsonify({'success': False, 'message': 'Participacion not found'}), 404
-        
-        # Verify persona exists
-        persona = session.query(Persona).filter(Persona.id == data['persona']).first()
-        if not persona:
-            return jsonify({'success': False, 'message': 'Persona not found'}), 404
-        
-        pp = ParticipacionPersona(
-            participacion=participacion_id,
-            persona=data['persona']
-        )
-        session.add(pp)
-        session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Persona added to participacion',
-            'id': pp.id
-        }), 201
-    except IntegrityError:
-        session.rollback()
-        return jsonify({'success': False, 'message': 'Integrity error'}), 409
-    except Exception as e:
-        session.rollback()
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
-
-@participacion_bp.route('/<int:participacion_id>/personas/<int:pp_id>', methods=['DELETE'])
-def remove_persona_from_participacion(participacion_id, pp_id):
-    """Remove a persona from a participation."""
-    session = get_session()
-    try:
-        pp = session.query(ParticipacionPersona).filter(
-            ParticipacionPersona.id == pp_id,
-            ParticipacionPersona.participacion == participacion_id
-        ).first()
-        
-        if not pp:
-            return jsonify({'success': False, 'message': 'ParticipacionPersona not found'}), 404
-        
-        session.delete(pp)
-        session.commit()
-        return jsonify({'success': True, 'message': 'Persona removed from participacion'}), 200
-    except Exception as e:
-        session.rollback()
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
-
-# ============ ROL PARTICIPACION MANAGEMENT ============
+# ============ ROL PARTICIPACION ============
 
 @participacion_bp.route('/roles', methods=['GET'])
 def list_rol_participacion():
-    """List all available participation roles."""
-    session = get_session()
     try:
-        roles = session.query(RolParticipacion).all()
-        
-        result = []
-        for r in roles:
-            result.append({
-                'id': r.id,
-                'nombre': r.nombre
-            })
-        
-        return jsonify(result), 200
+        roles = db.session.query(RolParticipacion).all()
+        return jsonify([{'id': r.id, 'nombre': r.nombre} for r in roles]), 200
     except Exception as e:
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
-
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @participacion_bp.route('/roles', methods=['POST'])
 def create_rol_participacion():
-    """Create a new participation role."""
     data = request.get_json(silent=True)
-    if not data:
-        return jsonify({'success': False, 'message': 'Invalid JSON'}), 400
-    
-    if 'nombre' not in data:
-        return jsonify({'success': False, 'message': 'Missing field: nombre'}), 400
-    
-    session = get_session()
+    if not data or 'nombre' not in data:
+        return jsonify({'success': False, 'message': 'Missing name'}), 400
     try:
         rol = RolParticipacion(nombre=data['nombre'])
-        session.add(rol)
-        session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'RolParticipacion created',
-            'id': rol.id
-        }), 201
-    except IntegrityError:
-        session.rollback()
-        return jsonify({'success': False, 'message': 'Integrity error'}), 409
+        db.session.add(rol)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Rol created', 'id': rol.id}), 201
     except Exception as e:
-        session.rollback()
-        return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-    finally:
-        session.close()
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500

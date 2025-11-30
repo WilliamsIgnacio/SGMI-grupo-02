@@ -334,3 +334,9 @@ class Erogacion(db.Model):
     
     institucion_ref = relationship('Institucion', back_populates='erogaciones')
     # tipo_erogacion_ref = relationship('TipoErogacion', back_populates='erogaciones')
+
+class RolParticipacion(db.Model):
+    __tablename__ = 'rol_participacion'
+    
+    id = Column(BigInteger, primary_key=True)
+    nombre = Column(String, nullable=False)

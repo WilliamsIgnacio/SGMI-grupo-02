@@ -1,6 +1,8 @@
 """Script para limpiar completamente la base de datos"""
 
+import os
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models.models_db import (

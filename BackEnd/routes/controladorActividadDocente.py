@@ -15,6 +15,69 @@ def convertir_fecha(fecha_texto):
         return None
 
 class ControladorActividadDocente(MethodView):
+    def crearActividad(self, data):
+        if not data.get('personalId') or not data.get('institucionId'):
+            raise ValueError('Faltan campos obligatorios (personalId, institucionId)')
+        try:
+            nuevaActividad = ActividadDocente(
+                fechaInicio=convertir_fecha(data.get('fechaInicio')),
+                fechaFin=convertir_fecha(data.get('fechaFin')),
+                rol=data.get('rol'),
+                personalId=data.get('personalId'),
+                institucionId=data.get('institucionId')
+            )
+            db.session.add(nuevaActividad)
+            db.session.commit()
+            return nuevaActividad
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        
+    def asignarActividadAPersonal(self, actividad, personalId):
+        try:
+            actividad.personalId = personalId
+            db.session.commit()
+            db.session.refresh(actividad)
+            return actividad
+        except Exception as e:
+            db.session.rollback()
+            raise e
+    
+    def modificarActividad(self, id, data):
+        actividad = ActividadDocente.query.get(id)
+        if not actividad:
+            raise ValueError('Actividad Docente no encontrada')
+        
+        try:
+            if 'fechaInicio' in data:
+                actividad.fechaInicio = convertir_fecha(data.get('fechaInicio'))
+            if 'fechaFin' in data:
+                actividad.fechaFin = convertir_fecha(data.get('fechaFin'))
+            
+            actividad.rol = data.get('rol', actividad.rol)
+            actividad.personalId = data.get('personalId', actividad.personalId)
+            actividad.institucionId = data.get('institucionId', actividad.institucionId)
+            
+            db.session.commit()
+            db.session.refresh(actividad)
+            return actividad
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        
+    def eliminarActividad(self, id):
+        actividad = ActividadDocente.query.get(id)
+        if not actividad:
+            return False
+        
+        try:
+            db.session.delete(actividad)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
     def get(self, id=None):
         if id is None:
             actividades = ActividadDocente.query.all()
@@ -28,67 +91,39 @@ class ControladorActividadDocente(MethodView):
     
     def post(self):
         data = request.get_json()
-        if not data.get('personalId') or not data.get('institucionId'):
-             return jsonify({'error': 'Faltan campos obligatorios (personalId, institucionId)'}), 400
-
-        try:
-            nueva_actividad = ActividadDocente(
-                fechaInicio=convertir_fecha(data.get('fechaInicio')),
-                fechaFin=convertir_fecha(data.get('fechaFin')),
-                rol=data.get('rol'),
-                personalId=data.get('personalId'),
-                institucionId=data.get('institucionId')
-            )
-            
-            db.session.add(nueva_actividad)
-            db.session.commit()
-            
+        try: 
+            nuevaActividad = self.crearActividad(data)
             return jsonify({
                 'mensaje': 'Actividad Docente creada exitosamente',
-                'actividad': nueva_actividad.to_dict()
+                'actividad': nuevaActividad.to_dict()
             }), 201
-            
+        except ValueError as ve:
+            return jsonify({'error': str(ve)}), 400
+    
         except Exception as e:
             db.session.rollback()
             return jsonify({'error': 'Error al crear la actividad', 'detalle': str(e)}), 400
 
     def put(self, id):
-        actividad = ActividadDocente.query.get(id)
-        if not actividad:
-            return jsonify({'error': 'Actividad Docente no encontrada'}), 404
-        
         data = request.get_json()
         try:
-            if 'fechaInicio' in data:
-                actividad.fechaInicio = convertir_fecha(data.get('fechaInicio'))
-            if 'fechaFin' in data:
-                actividad.fechaFin = convertir_fecha(data.get('fechaFin'))
-            
-            actividad.rol = data.get('rol', actividad.rol)
-            actividad.personalId = data.get('personalId', actividad.personalId)
-            actividad.institucionId = data.get('institucionId', actividad.institucionId)
-            
-            db.session.commit()
+            actividad = self.modificarActividad(id, data)
             return jsonify({
-                'mensaje': 'Actividad Docente actualizada exitosamente',
+                'mensaje': 'Actividad Docente modificada exitosamente',
                 'actividad': actividad.to_dict()
             }), 200
             
         except Exception as e:
-            db.session.rollback()
             return jsonify({'error': 'Error al actualizar la actividad', 'detalle': str(e)}), 400
 
     def delete(self, id):
-        actividad = ActividadDocente.query.get(id)
-        if not actividad:
-            return jsonify({'error': 'Actividad Docente no encontrada'}), 404
-        
         try:
-            db.session.delete(actividad)
-            db.session.commit()
-            return jsonify({'mensaje': 'Actividad Docente eliminada exitosamente'}), 200
+            exito = self.eliminarActividad(id)
+            if exito:
+                return jsonify({'mensaje': 'Actividad Docente eliminada exitosamente'}), 200
+            else:
+                return jsonify({'error': 'Actividad Docente no encontrada'}), 404
         except Exception as e:
-            db.session.rollback()
             return jsonify({'error': 'Error al eliminar la actividad', 'detalle': str(e)}), 400
 
 actividad_view = ControladorActividadDocente.as_view('controlador_actividad_docente')

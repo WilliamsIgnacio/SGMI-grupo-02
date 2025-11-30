@@ -2,8 +2,10 @@ from sqlalchemy import create_engine, text
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), '../../.env')
+load_dotenv(dotenv_path)
 DB_URL = os.getenv('DATABASE_URL') or 'postgresql://postgres:Segundo_Francia_2025@localhost:5432/sgmi'
+
 engine = create_engine(DB_URL)
 conn = engine.connect()
 

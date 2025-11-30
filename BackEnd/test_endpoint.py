@@ -2,8 +2,8 @@
 import urllib.request
 import json
 
-# Probar primero el grupo 1
-url = "http://127.0.0.1:5000/api/experto/grupo/1"
+# Probar el grupo 2 con filtro por fecha 2024
+url = "http://127.0.0.1:5000/api/experto/grupo/2/por-fecha?fecha_inicio=2024-01-01&fecha_fin=2024-12-31"
 
 try:
     with urllib.request.urlopen(url) as response:

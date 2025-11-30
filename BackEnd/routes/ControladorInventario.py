@@ -387,8 +387,10 @@ def list_bibliografia():
         for bib in bibliografia_list:
             result.append({
                 'id': bib.id,
-                'referencia': bib.referencia,
-                'descripcion': bib.descripcion,
+                'titulo': bib.titulo,
+                'autores': bib.autores,
+                'editorial': bib.editorial,
+                'fecha': bib.fecha.isoformat(),
                 'grupo_id': bib.grupo
             })
         
@@ -406,7 +408,7 @@ def create_bibliografia():
     if not data:
         return jsonify({'success': False, 'message': 'Invalid JSON'}), 400
     
-    required = ['referencia', 'grupo']
+    required = ['titulo', 'autores', 'editorial', 'fecha', 'grupo']
     missing = [f for f in required if f not in data]
     if missing:
         return jsonify({'success': False, 'message': f'Missing fields: {missing}'}), 400
@@ -419,8 +421,10 @@ def create_bibliografia():
             return jsonify({'success': False, 'message': 'Grupo not found'}), 404
         
         bibliografia = Bibliografia(
-            referencia=data['referencia'],
-            descripcion=data.get('descripcion'),
+            titulo=data['titulo'],
+            autores=data['autores'],
+            editorial=data['editorial'],
+            fecha=date.fromisoformat(data['fecha']),
             grupo=data['grupo']
         )
         session.add(bibliografia)
@@ -455,8 +459,10 @@ def get_bibliografia(bibliografia_id):
         
         return jsonify({
             'id': bibliografia.id,
-            'referencia': bibliografia.referencia,
-            'descripcion': bibliografia.descripcion,
+            'titulo': bibliografia.titulo,
+            'autores': bibliografia.autores,
+            'editorial': bibliografia.editorial,
+            'fecha': bibliografia.fecha.isoformat(),
             'grupo_id': bibliografia.grupo
         }), 200
     except Exception as e:
@@ -488,10 +494,17 @@ def update_bibliografia(bibliografia_id):
                 return jsonify({'success': False, 'message': 'Grupo not found'}), 404
         
         # Update allowed fields
-        allowed_fields = ['referencia', 'descripcion', 'grupo']
-        for field in allowed_fields:
+        allowed_fields = {
+            'titulo': str,
+            'autores': str,
+            'editorial': str,
+            'fecha': lambda x: date.fromisoformat(x),
+            'grupo': int
+        }
+        
+        for field, field_type in allowed_fields.items():
             if field in data:
-                setattr(bibliografia, field, data[field])
+                setattr(bibliografia, field, field_type(data[field]) if callable(field_type) else data[field])
         
         session.commit()
         return jsonify({'success': True, 'message': 'Bibliografia updated'}), 200
@@ -542,8 +555,10 @@ def get_bibliografia_by_grupo(grupo_id):
         for bib in bibliografia_list:
             result.append({
                 'id': bib.id,
-                'referencia': bib.referencia,
-                'descripcion': bib.descripcion
+                'titulo': bib.titulo,
+                'autores': bib.autores,
+                'editorial': bib.editorial,
+                'fecha': bib.fecha.isoformat()
             })
         
         return jsonify(result), 200

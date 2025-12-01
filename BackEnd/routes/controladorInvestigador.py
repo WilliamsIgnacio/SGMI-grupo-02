@@ -19,6 +19,7 @@ class ControladorInvestigador(MethodView):
                     nombre=data.get('nombre'),
                     apellido=data.get('apellido'),
                     horas=data.get('horas'),
+                    correo_electronico=data.get('correoElectronico'),
                     gradoAcademicoId=data.get('gradoAcademicoId'),
                     institucionId=data.get('institucionId'),
 
@@ -48,6 +49,7 @@ class ControladorInvestigador(MethodView):
             investigador.nombre = data.get('nombre', investigador.nombre)
             investigador.apellido = data.get('apellido', investigador.apellido)
             investigador.horas = data.get('horas', investigador.horas)
+            investigador.correo_electronico = data.get('correoElectronico', investigador.correo_electronico)
             investigador.institucionId = data.get('institucionId', investigador.institucionId)
 
             investigador.categoria = data.get('categoria', investigador.categoria)

@@ -17,7 +17,6 @@ class ControladorProfesional(MethodView):
                 nombre=data.get('nombre'),  
                 apellido=data.get('apellido'),
                 horas=data.get('horas'),
-                correo_electronico=data.get('correoElectronico'),
                 gradoAcademicoId=data.get('gradoAcademicoId'),
                 institucionId=data.get('institucionId'),
                 
@@ -48,7 +47,6 @@ class ControladorProfesional(MethodView):
             profesional.nombre = data.get('nombre', profesional.nombre)
             profesional.apellido = data.get('apellido', profesional.apellido)
             profesional.horas = data.get('horas', profesional.horas)
-            profesional.correo_electronico = data.get('correoElectronico', profesional.correo_electronico)
             profesional.institucionId = data.get('institucionId', profesional.institucionId)
 
             profesional.especialidad = data.get('especialidad', profesional.especialidad)

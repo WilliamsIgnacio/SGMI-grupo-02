@@ -1,161 +1,134 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom"
 import "./Grupo.css";
-import { useState } from "react";
 
-import CabeceraTabla from "../../components/CabeceraTabla";
 import Tabla from "../../components/Tabla";
 import Boton from "../../components/Boton";
 import BotonAgregar from "../../components/BotonAgregar";
 import imagenMas from "../../images/mas.png";
+import imagenEliminar from "../../images/eliminar.png"
+import imagenModificar from "../../images/modificar.png"
+import FormularioGrupo from "./FormularioGrupo"; 
 
 import { getGrupos, getGrupo, createGrupo, updateGrupo, deleteGrupo } from "../../services/GrupoService";
 
-//componentes bootstrap
+
 import ModalFormularios from "../../components/ModalFormularios";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Pagination from 'react-bootstrap/Pagination'; 
 
 
+const itemsPorPagina = 5;
 
 function Grupo() {
+    const navegar = useNavigate(); 
 
-    const [modalShow, setModalShow] = React.useState(false);
-
-    const [grupos, setGrupos] = React.useState([]);
-
-    const columnas = ["Sigla", "Nombre", "Unidad Academica", "Director/a", "Vicedirector/a", "Correo Electronico", "Acciones"];
-    const filasPrueba = [
-        ["S.M.O.P", "Smooth Operator", "Ferrari", "Carlos Sainz JR.", "Charles Leclerc", "ferrari@gmail.com"],
-        ["L.I.N.S.I", "Laboratorio de ingenieria en sistemas de informacion", "frlp", "Milagros Crespo", "Martina Garcia", "linsi@hotmail.com"] ];
+    const [mostrarModal, setMostrarModal] = useState(false); 
     
-
-    const [modalInfo, setModalInfo] = React.useState({
+    const [grupos, setGrupos] = useState([]);
+    
+    const [paginaActual, setPaginaActual] = useState(1); 
+    
+    const [grupoSeleccionadoId, setGrupoSeleccionadoId] = useState(null); 
+    
+    const [infoModal, setInfoModal] = useState({ 
         titulo: '',
-        contenido: null
-    })
+        tipo: null 
+    });
 
-    //manejar los grupos
+    const [datosNuevoGrupo, setDatosNuevoGrupo] = useState({ 
+        sigla: '', nombre: '', unidad_academica: '',
+        director: '', vicedirector: '', correoElectronico: '' 
+    });
+    
+    const [datosFormularioGrupo, setDatosFormularioGrupo] = useState({ 
+        sigla: '', nombre: '', unidad_academica: '',
+        director: '', vicedirector: '', correoElectronico: ''
+    });
+
+    const [contenidoDetalle, setContenidoDetalle] = useState({ 
+        campo: null, 
+        contenido: '', 
+        grupoId: null,
+    });
+    
+    const [idGrupoAModificar, setIdGrupoAModificar] = useState(null); 
+
+    const [claveFormulario, setClaveFormulario] = useState(0); 
+    
+    const columnas = [
+        "Selección", 
+        "Sigla", 
+        "Nombre", 
+        "Unidad Academica", 
+        "Director/a", 
+        "Vicedirector/a", 
+        "Correo Electronico", 
+        "Acciones"
+    ];
+
+    const manejarCambioRadio = (id) => { 
+        setGrupoSeleccionadoId(id);
+    };
 
     useEffect(() => {
-        fetchGrupos();
+        obtenerGrupos(); 
     }, []);
 
-    useEffect(() => {
-        fetchGrupos();
-    }, []);
-
-    const fetchGrupos = async () => {
+    const obtenerGrupos = async () => {
         try {
             const data = await getGrupos();
-            setGrupos(data);
-            console.log(data);
+            setGrupos(data.reverse());
+            setPaginaActual(1); 
         } catch (error) {
             console.error("Error al obtener los grupos:", error);
         }
     };
 
-    const filasTabla = grupos.map(grupo => {
+    const manejarCambioFormularioNuevo = (e) => { 
+        const { name, value } = e.target; 
+        setDatosNuevoGrupo(prev => ({ ...prev, [name]: value }));
+    }
 
-        const grupoId = grupo.id; 
+    const manejarCambioFormularioExistente = (e) => { 
+        const { name, value } = e.target;
+        setDatosFormularioGrupo(prevData => ({ ...prevData, [name]: value }));
+    };
 
-        const botonModificar = (
-            <Boton 
-                texto={"Modificar"} 
-                accion={() => iniciarModificacion(grupoId)}
-            />
-        );
-
-        return [
-            grupo.sigla, 
-            grupo.nombre, 
-            grupo.unidad_academica, 
-            grupo.director, 
-            grupo.vicedirector, 
-            grupo.correo,
-            botonModificar 
-        ];
-    });
-
-    const [grupoFormularioData, setGrupoFormularioData] = useState({ 
-        sigla: '',
-        nombre: '',
-        unidad_academica: '',
-        director: '',
-        vicedirector: '',
-        correo: ''
-    });
-
-    const [grupoModificarId, setGrupoModificarId] = useState(null)
-
-    const [nuevoGrupoData, setNuevoGrupoData] = useState({
-        sigla: '',
-        nombre: '',
-        unidad_academica: '',
-        director: '',
-        vicedirector: '',
-        correo: ''
-    });
-
-    const handleFormulario = (e) => {
-        const { id, value } = e.target;
-        setNuevoGrupoData(prevData => ({
-            ...prevData,
-            [id]: value
-        }));
-    } 
-
-    const handleSubmit = async (e) => {
-    e.preventDefault(); 
-
+    const manejarEnvio = async (e) => { 
+        e.preventDefault(); 
         try {
-            console.log("Enviando datos del nuevo grupo:", nuevoGrupoData);
+            const datosACrear = {
+                ...datosNuevoGrupo,
+                objetivos: datosNuevoGrupo.objetivos || '',
+                consejo_ejecutivo: datosNuevoGrupo.consejo_ejecutivo || '',
+                organigrama: datosNuevoGrupo.organigrama || '',
+            };
 
-            await createGrupo(nuevoGrupoData);
-            setNuevoGrupoData({
-                sigla: '',
-                nombre: '',
-                unidad_academica: '',
-                director: '',
-                vicedirector: '',
-                correo: ''
-            });
-
-            await fetchGrupos(); 
-            setModalShow(false); 
-            
+            await createGrupo(datosACrear);
+            setDatosNuevoGrupo({ sigla: '', nombre: '', unidad_academica: '', director: '', vicedirector: '', correoElectronico: '' });
+            await obtenerGrupos(); 
+            setMostrarModal(false); 
         } catch (error) {
             console.error("Error al crear el grupo:", error);
             alert(`Error al crear el grupo: ${error.message}`);
         }
     };
 
-    const handleUpdate = async (e) => {
+    const manejarActualizacion = async (e) => { 
         e.preventDefault();
-
-        if (!grupoModificarId) {
-            console.error("No hay ID de grupo para actualizar.");
-            return;
-        }
+        if (!idGrupoAModificar) return console.error("No hay ID de grupo para actualizar.");
 
         try {
-            console.log(`Actualizando grupo ID: ${grupoModificarId} con datos:`, grupoFormularioData);
-
-            await updateGrupo(grupoModificarId, grupoFormularioData);
-
-            await fetchGrupos(); 
-
-            setGrupoEditandoId(null);
-            setGrupoFormularioData({ 
-                sigla: '', nombre: '', unidad_academica: '', 
-                director: '', vicedirector: '', correo: ''
-            });
-
-            setModalShow(false); 
-
+            await updateGrupo(idGrupoAModificar, datosFormularioGrupo);
+            await obtenerGrupos(); 
+            setIdGrupoAModificar(null);
+            setDatosFormularioGrupo({ sigla: '', nombre: '', unidad_academica: '', director: '', vicedirector: '', correoElectronico: '' });
+            setMostrarModal(false); 
         } catch (error) {
             console.error("Error al modificar el grupo:", error);
             alert(`Error al modificar el grupo: ${error.message}`);
@@ -165,327 +138,327 @@ function Grupo() {
     const iniciarModificacion = async (id) => {
         try {
             const grupoAModificar = await getGrupo(id);
+            setIdGrupoAModificar(id); 
             
-            setGrupoEditandoId(id); 
-            
-            setGrupoFormularioData({
+            setDatosFormularioGrupo({
                 sigla: grupoAModificar.sigla || '',
                 nombre: grupoAModificar.nombre || '',
-                unidadAcademica: grupoAModificar.unidad_academica || '',
+                unidad_academica: grupoAModificar.unidad_academica || '',
                 director: grupoAModificar.director || '',
                 vicedirector: grupoAModificar.vicedirector || '',
-                correo: grupoAModificar.correo || '',
+                correoElectronico: grupoAModificar.correoElectronico || '',
             });
 
-            mostrarFormularioModificacion(grupoAModificar.nombre); 
+            setInfoModal({
+                titulo: `Modificar Grupo: ${grupoAModificar.nombre}`,
+                tipo: 'modificar'
+            });
+            setMostrarModal(true);
 
         } catch (error) {
             console.error("Error al cargar datos para modificar:", error);
-            alert(`No se pudo cargar el grupo para edición: ${error.message}`);
+            alert(`No se pudo cargar el grupo para edición: ${error.message}`); 
+        }
+    };
+    
+    const manejarEliminacion = async (id, nombre) => { 
+        const confirmar = window.confirm(`¿Estás seguro de que deseas eliminar el grupo "${nombre}"? Esta acción es irreversible.`);
+        
+        if (confirmar) {
+            try {
+                await deleteGrupo(id); 
+                alert(`El grupo "${nombre}" ha sido eliminado exitosamente.`);
+                await obtenerGrupos(); 
+                
+            } catch (error) {
+                console.error("Error al eliminar el grupo:", error);
+                alert(`No se pudo eliminar el grupo "${nombre}": ${error.message}`);
+            }
         }
     };
 
-    const mostrarFormularioModificacion = (nombreGrupo) => {
-        setModalInfo({
-            titulo: `Modificar Grupo: ${nombreGrupo}`,
-            contenido: (
-                <Form onSubmit={handleUpdate}>
-                    <FormularioGrupoContent 
-                        data={grupoFormularioData} 
-                        handleChange={handleFormChange}
-                        isModifying={true}
-                    />
-                </Form>
-            )
+    const obtenerYAbrirModalDetalle = (campoUI, tituloModal) => { 
+        if (!grupoSeleccionadoId) {
+            alert("Por favor, selecciona un grupo primero.");
+            return;
+        }
+        
+        let campoJSON;
+        if (campoUI === 'objetivo') {
+            campoJSON = 'objetivos';
+        } else if (campoUI === 'consejoEjecutivo') {
+            campoJSON = 'consejo_ejecutivo';
+        } else if (campoUI === 'organigrama') {
+            campoJSON = 'organigrama';
+        } else {
+            console.error("Campo de detalle no válido:", campoUI);
+            return;
+        }
+
+        const grupoSeleccionado = grupos.find(g => g.id === grupoSeleccionadoId);
+        if (!grupoSeleccionado) {
+            alert("Error: No se encontró el grupo seleccionado en los datos.");
+            return;
+        }
+
+        const contenido = grupoSeleccionado[campoJSON] || "";
+        
+        setContenidoDetalle({
+            campo: campoJSON, 
+            contenido: contenido,
+            grupoId: grupoSeleccionadoId,
         });
-        setModalShow(true);
+        setInfoModal({ titulo: tituloModal, tipo: 'verDetalle' });
+        setMostrarModal(true);
     };
 
-    const FormularioGrupoContent = ({ data, handleChange, isModifying }) => (
-        <>
-            <Row className="mb-3">
-                <Form.Group as={Col} controlId="sigla"> 
-                    <Form.Label>Sigla</Form.Label>
-                    <Form.Control 
-                        type="text" 
-                        placeholder="Sigla del grupo" 
-                        id="sigla"
-                        value={data.sigla}
-                        onChange={handleChange}
-                        required
-                    />
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="nombre">
-                    <Form.Label>Nombre</Form.Label>
-                    <Form.Control 
-                        type="text" 
-                        placeholder="Nombre del Grupo" 
-                        id="nombre"
-                        value={data.nombre}
-                        onChange={handleChange}
-                        required
-                    />
-                </Form.Group>
-            </Row>
-
-            <Form.Group className="mb-3" controlId="unidadAcademica">
-                <Form.Label>Unidad Académica</Form.Label>
-                <Form.Control 
-                    placeholder="p. ej: Facultad Regional La Plata" 
-                    id="unidadAcademica"
-                    value={data.unidad_academica}
-                    onChange={handleChange}
-                    required
-                />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="correo">
-                <Form.Label>Correo Electrónico</Form.Label>
-                <Form.Control 
-                    type="email" 
-                    placeholder="correogrupo@gmail.com" 
-                    id="correo"
-                    value={data.correo}
-                    onChange={handleChange}
-                    required
-                />
-            </Form.Group>
-
-            <Row className="mb-3">
-                <Form.Group as={Col} controlId="director">
-                <Form.Label>Director/a</Form.Label>
-                <Form.Control 
-                    placeholder="Nombre y Apellido"
-                    id="director"
-                    value={data.director}
-                    onChange={handleChange}
-                    required
-                />
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="vicedirector">
-                <Form.Label>Vicedirector/a</Form.Label>
-                <Form.Control 
-                    placeholder="Nombre y Apellido"
-                    id="vicedirector"
-                    value={data.vicedirector}
-                    onChange={handleChange}
-                    required
-                />
-                </Form.Group>
-            </Row>
-            <div style={{ textAlign: 'right', marginTop: '15px' }}>
-                <Button variant="primary" type="submit">
-                    {isModifying ? "Guardar Cambios" : "Agregar Grupo"}
-                </Button>
-            </div>
-        </>
-    );
-
-    //funcion botones + ventanas pop up
-
-    function modificarObjetivos() {
-        setModalInfo({
-            titulo: "Modificar Grupo",
-            contenido: (
-                <div>
-                    <FloatingLabel controlId="floatingTextarea2">
-                        <Form.Control
-                            as="textarea"
-                            placeholder="Objetivos"
-                            style={{ height: '200px' }}
-                        />
-                    </FloatingLabel> 
-                    <button type="submit" className="boton-aceptar-form">Aceptar</button>
-                </div>
-            )
-        });
-        setModalShow(true);
+    function verObjetivos() {
+        obtenerYAbrirModalDetalle('objetivo', 'Objetivos del Grupo');
     }
 
-    function modificarConsejo() {
-        setModalInfo({
-            titulo: "Modificar Consejo",
-            contenido: (
-                <div>
-                    <FloatingLabel controlId="floatingTextarea2">
-                        <Form.Control
-                            as="textarea"
-                            placeholder="Objetivos"
-                            style={{ height: '200px' }}
-                        />
-                    </FloatingLabel>
-                    <button type="button">Aceptar</button>
-                </div>
-            )
-        });
-        setModalShow(true);
+    function verOrganigrama() {
+        obtenerYAbrirModalDetalle('organigrama', 'Organigrama del Grupo');
     }
 
-    function modificarOrganigrama() {
-        setModalInfo({
-            titulo: "Modificar Organigrama",
-            contenido: (
-                <div>
-                    <FloatingLabel controlId="floatingTextarea2">
-                        <Form.Control
-                            as="textarea"
-                            style={{ height: '200px' }}
-                        />
-                    </FloatingLabel>
-                    <button type="button">Aceptar</button>
-                </div>
-            )
-        });
-        setModalShow(true);
+    function verConsejoEjecutivo() {
+        obtenerYAbrirModalDetalle('consejoEjecutivo', 'Consejo Ejecutivo');
     }
+
+    const iniciarEdicionDetalle = () => { 
+        setInfoModal(prev => ({ ...prev, tipo: 'modificarDetalle' }));
+    };
+
+    const manejarCambioDetalle = (e) => { 
+        setContenidoDetalle(prev => ({ ...prev, contenido: e.target.value }));
+    };
+
+    const manejarEnvioDetalle = async (e) => { 
+        e.preventDefault();
+        const { grupoId, campo, contenido } = contenidoDetalle;
+
+        if (!grupoId || !campo) {
+            alert("Error: Grupo o campo no definido para guardar.");
+            return;
+        }
+
+        try {
+            const grupoActual = grupos.find(g => g.id === grupoId);
+            
+            if (!grupoActual) {
+                throw new Error("Grupo no encontrado para actualizar.");
+            }
+            
+            const datosActualizados = {
+                ...grupoActual,
+                [campo]: contenido, 
+            };
+
+            await updateGrupo(grupoId, datosActualizados); 
+            
+            alert(`${infoModal.titulo} actualizado exitosamente.`);
+            setMostrarModal(false);
+
+            await obtenerGrupos(); 
+
+        } catch (error) {
+            console.error(`Error al actualizar ${campo}:`, error);
+            alert(`Error al actualizar ${infoModal.titulo}: ${error.message}`);
+        }
+    };
 
     function agregarGrupo(){
-
-        setGrupoModificarId(null),
-        setGrupoFormularioData({sigla: '', nombre: '', unidad_academica: '', director: '', vicedirector: '', correo: ''})
-
-        setModalInfo({
-            titulo: "Agregar Grupo",
-            contenido: (
-                <div>
-                    <Form onSubmit={handleSubmit}>
-                        <Row className="mb-3">
-                            <Form.Group as={Col} controlId="sigla">
-                                <Form.Label>Sigla</Form.Label>
-                                <Form.Control 
-                                    type="text" 
-                                    placeholder="Sigla del grupo" 
-                                    id="sigla"
-                                    value={setNuevoGrupoData.sigla}
-                                    onChange={handleFormulario}
-                                />
-                            </Form.Group>
-
-                            <Form.Group as={Col} controlId="nombre">
-                                <Form.Label>Nombre</Form.Label>
-                                <Form.Control 
-                                    type="text" 
-                                    placeholder="Nombre del Grupo"
-                                    id="nombre"
-                                    value={setNuevoGrupoData.nombre}
-                                    onChange={handleFormulario}
-                                />
-                            </Form.Group>
-                        </Row>
-
-                        <Form.Group className="mb-3" controlId="unidad_academica">
-                            <Form.Label>Unidad Académica</Form.Label>
-                            <Form.Control 
-                                placeholder="p. ej: Facultad Regional La Plata" 
-                                id="unidad_academica"
-                                value={setNuevoGrupoData.unidad_academica}
-                                onChange={handleFormulario}    
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="correo">
-                            <Form.Label>Correo Electrónico</Form.Label>
-                            <Form.Control 
-                                type="email"
-                                placeholder="correogrupo@gmail.com"
-                                id="correo"
-                                value={setNuevoGrupoData.correo}
-                                onChange={handleFormulario}
-                            />
-                        </Form.Group>
-
-                        <Row className="mb-3">
-                            <Form.Group as={Col} controlId="director">
-                            <Form.Label>Director/a</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                placeholder="Nombre y Apellido"
-                                id="director"
-                                value={setNuevoGrupoData.director}
-                                onChange={handleFormulario}    
-                            />
-                            </Form.Group>
-
-                            <Form.Group as={Col} controlId="vicedirector">
-                            <Form.Label>Vicedirector/a</Form.Label>
-                            <Form.Control
-                                type="text" 
-                                placeholder="Nombre y Apellido"
-                                id="vicedirector"
-                                value={setNuevoGrupoData.vicedirector}
-                                onChange={handleFormulario}
-                            />
-                            </Form.Group>
-                        </Row>
-                        <div style={{textAlign: 'right', marginTop: '15px'}}>
-                            <Button variant="primary" type="submit" style={{backgroundColor: '#7b7b7b', borderColor: '#7b7b7b'}}>
-                                Agregar
-                            </Button>
-                        </div>
-                    </Form>
-                </div>
-            )
-        });
-        setModalShow(true);
-    }
-
-    function verObjetivos(){
-        setModalInfo({
-            titulo: "Objetivos del grupo",
-            contenido: (
-                <div>
-                    <p>Aca irian los objetivos</p>
-                    <Boton texto={"Modificar"} accion={modificarObjetivos}>
-                    </Boton>
-                </div>
-            )
-        });
-        setModalShow(true);
-    }
-
-    function verOrganigrama(){
-        setModalInfo({
-            titulo: "Organigrama del Grupo",
-            contenido: (
-                <div>
-                    <p>ORGANIGRAMA</p>
-                    <Boton texto={"Modificar"} accion={modificarOrganigrama}></Boton>
-                </div>
-            )
-        });
-        setModalShow(true);
-    }
-
-    function verConsejoEjecutivo(){
-        setModalInfo({
-            titulo: "Consejo ejecutivo",
-            contenido: (
-                <div>
-                    <p>Avril <br/> Nacho</p>
-                    <Boton texto={"Modificar"} accion={modificarConsejo}>
-                    </Boton>
-                </div>
-            )
-        });
-        setModalShow(true);
+        setDatosNuevoGrupo({ sigla: '', nombre: '', unidad_academica: '', director: '', vicedirector: '', correoElectronico: '' });
+        setIdGrupoAModificar(null); 
+        setClaveFormulario(prevKey => prevKey + 1);
+        setInfoModal({ titulo: "Agregar Grupo", tipo: 'agregar' });
+        setMostrarModal(true);
     }
 
     function verPlanificacion(){
-        navigate("planificacion");
+        navegar("planificacion");
     }
+    
 
+    const indiceUltimoItem = paginaActual * itemsPorPagina; 
+    const indicePrimerItem = indiceUltimoItem - itemsPorPagina;
+    
+    const gruposActuales = grupos.slice(indicePrimerItem, indiceUltimoItem);
+    
+    const totalPaginas = Math.ceil(grupos.length / itemsPorPagina); 
+
+    const paginar = (numeroPagina) => { // paginate -> paginar
+        setPaginaActual(numeroPagina);
+        setGrupoSeleccionadoId(null); 
+    };
+
+    const renderizarPaginacion = () => { 
+        let items = [];
+        for (let number = 1; number <= totalPaginas; number++) {
+            items.push(
+                <Pagination.Item 
+                    key={number} 
+                    active={number === paginaActual} 
+                    onClick={() => paginar(number)}
+                >
+                    {number}
+                </Pagination.Item>,
+            );
+        }
+        
+        return (
+            <div className="d-flex justify-content-center mt-3">
+                <Pagination>
+                    <Pagination.Prev onClick={() => paginar(paginaActual - 1)} disabled={paginaActual === 1} />
+                    {items}
+                    <Pagination.Next onClick={() => paginar(paginaActual + 1)} disabled={paginaActual === totalPaginas} />
+                </Pagination>
+            </div>
+        );
+    };
+
+    const filasTabla = gruposActuales.map(grupo => { 
+        const grupoId = grupo.id; 
+        const grupoNombre = grupo.nombre; 
+        
+        const radio = (
+            <input 
+                type="radio" 
+                className="form-check-input"
+                name="grupoSelection"
+                checked={grupoSeleccionadoId === grupoId}
+                onChange={() => manejarCambioRadio(grupoId)}
+            />
+        );
+        
+        const botonModificar = (
+            <BotonAgregar accion={() => iniciarModificacion(grupoId)}>
+                <img src={imagenModificar} alt="icono modificar" style={{width: '15px'}} />
+            </BotonAgregar>
+        
+        );
+        
+        const botonEliminar = (
+            <BotonAgregar accion={() => manejarEliminacion(grupoId, grupoNombre)}>
+                <img src={imagenEliminar} alt="icono eliminar" style={{width: '15px'}} />
+            </BotonAgregar>
+            
+        );
+
+        const acciones = (
+            <div style={{ display: 'flex', gap: '5px' }}>
+                {botonModificar}
+                {botonEliminar} 
+            </div>
+        );
+        
+        return [
+            radio,
+            grupo.sigla, 
+            grupo.nombre, 
+            grupo.unidad_academica, 
+            grupo.director, 
+            grupo.vicedirector, 
+            grupo.correoElectronico,
+            acciones
+        ];
+    });
+
+    const renderizarContenidoModal = () => { 
+        const tipo = infoModal.tipo;
+        
+        const areaTextoDetalleVisualizar = () => (
+            <div>
+                <p style={{ 
+                    whiteSpace: 'pre-wrap', 
+                    padding: '10px', 
+                    border: '1px solid #ccc', 
+                    minHeight: '100px',
+                    backgroundColor: '#f8f9fa'
+                }}>
+                    {contenidoDetalle.contenido.trim() === "" 
+                        ? `El campo "${infoModal.titulo}" para el grupo seleccionado está vacío.` 
+                        : contenidoDetalle.contenido
+                    }
+                </p>
+                <div style={{ textAlign: 'right', marginTop: '15px' }}>
+                    <Button onClick={iniciarEdicionDetalle} variant="primary">
+                        Modificar
+                    </Button>
+                </div>
+            </div>
+        );
+
+        const areaTextoDetalleEditable = () => (
+            <Form onSubmit={manejarEnvioDetalle}>
+                <FloatingLabel 
+                    controlId="floatingTextareaDetalle" 
+                    label="Contenido"
+                >
+                    <Form.Control
+                        as="textarea"
+                        placeholder="Escribe el contenido aquí..."
+                        value={contenidoDetalle.contenido}
+                        onChange={manejarCambioDetalle}
+                        style={{ height: '200px' }}
+                    />
+                </FloatingLabel>
+                <div style={{ textAlign: 'right', marginTop: '15px' }}>
+                    <Button type="submit" variant="success">Guardar Cambios</Button>
+                    <Button 
+                        type="button" 
+                        variant="secondary" 
+                        onClick={() => setInfoModal(prev => ({ ...prev, tipo: 'verDetalle' }))}
+                        style={{ marginLeft: '10px' }}
+                    >
+                        Cancelar
+                    </Button>
+                </div>
+            </Form>
+        );
+
+        switch(tipo) {
+            case 'agregar':
+                return (
+                    <Form onSubmit={manejarEnvio} key={claveFormulario}> 
+                        <FormularioGrupo 
+                            data={datosNuevoGrupo} 
+                            handleChange={manejarCambioFormularioNuevo}
+                            isModifying={false}
+                        />
+                    </Form>
+                );
+            case 'modificar':
+                return (
+                    <Form onSubmit={manejarActualizacion}>
+                        <FormularioGrupo 
+                            data={datosFormularioGrupo} 
+                            handleChange={manejarCambioFormularioExistente}
+                            isModifying={true}
+                        />
+                    </Form>
+                );
+            
+            case 'verDetalle':
+                return areaTextoDetalleVisualizar();
+            
+            case 'modificarDetalle':
+                return areaTextoDetalleEditable();
+
+            default:
+                return <p>Contenido no definido para este modal.</p>; 
+        }
+    };
+    
     return (
         <div>
             <div>
-                <div className="row container-fluid">
+                <div className="row container-fluid grupo">
                     <h1 className="col-2">Grupos:</h1>
                     <div className="col-8"></div>
                     <div className="col-2">
-                        <BotonAgregar accion={agregarGrupo}> 
-                                <img className="imagenMas" src={imagenMas} alt="imagen mas"/>
-                                Agregar Grupo
+                        <BotonAgregar className="boton-agregar" accion={agregarGrupo}> 
+                            <img className="imagenMas" src={imagenMas} alt="imagen mas"/>
+                            Agregar Grupo
                         </BotonAgregar>
                     </div>
                 </div>
@@ -494,37 +467,34 @@ function Grupo() {
                     <div className="col-10">
                         <Tabla 
                             columnas={columnas}
-                            filas={filasTabla}
-                            //filas={filasPrueba}
-                        >
-                        </Tabla>
+                            filas={filasTabla} 
+                        />
+                        
+                        {renderizarPaginacion()}
+                        
                     </div>
                     <div className="col-1"></div>
                 </div>
-                <div className="row container-fluid">
-                    <div className="col-3">
+                
+                <div className="row container-fluid mt-4">
+                    <div className="col-12 d-flex justify-content-end gap-3">
                         <Boton texto={"Ver Planificacion"} accion={verPlanificacion}></Boton>
-                    </div>
-                    <div className="col-3">
                         <Boton texto={"Ver Objetivos"} accion={verObjetivos}></Boton>
-                    </div>
-                    <div className="col-3">
                         <Boton texto={"Ver Organigrama"} accion={verOrganigrama}></Boton>
+                        <Boton texto={"Ver Consejo Ejecutivo"} accion={verConsejoEjecutivo}></Boton>
                     </div>
-                    <div className="col-3">
-                        <Boton texto={"Ver Consejo ejecutivo"} accion={verConsejoEjecutivo}></Boton>
-                    </div>
-                </div> 
+                </div>
+
                 <ModalFormularios
-                    show={modalShow}
-                    onHide={() => setModalShow(false)}
-                    titulo={modalInfo.titulo}
+                    show={mostrarModal}
+                    onHide={() => setMostrarModal(false)}
+                    titulo={infoModal.titulo}
                 >
-                    {modalInfo.contenido}
+                    {renderizarContenidoModal()}
                 </ModalFormularios>
             </div>
         </div>
     )
 }
 
-export default Grupo
+export default Grupo;

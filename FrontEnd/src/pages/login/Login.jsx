@@ -12,14 +12,13 @@ function Login() {
     }
 
     return (
-        <div className="container-fluid">
-            <h1 className="titulo">SGMI</h1>
-            <p>Sistema de Gestión de Memorias de<br></br> Grupos y Centros de Investigación</p>
-            <h3>¡Bienvenido de vuelta!</h3>
-            
-
-            <div className="row container-fluid">
+        <div className="container-fluid login">
+            <div className="row container-fluid login">
                 <div className="col-3 login-container">
+                    <h1 className="titulo-login">SGMI</h1>
+                    <p>Sistema de Gestión de Memorias de<br></br> Grupos y Centros de Investigación</p>
+                    <h3>¡Bienvenido de vuelta!</h3>
+            
                     <Form>
                         <Form.Group className="mb-2" controlId="emailLogin">
                             <Form.Label>Email</Form.Label>
@@ -34,7 +33,7 @@ function Login() {
                     <Boton className="boton-iniciar-sesion" texto={"Iniciar Sesión"} accion={iniciarSesion}></Boton>
                 </div>
                 <div className="col imagen">
-                    <Image src={imagenLogin} alt="Imagen del login"></Image>
+                    <Image className="imagen-iniciar-sesion" src={imagenLogin} alt="Imagen del login"></Image>
                 </div>
             </div>
             

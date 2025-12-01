@@ -15,7 +15,7 @@ function navbar() {
     return (
         <Navbar expand="lg" className="bg-body-tertiary">
             <Container fluid>
-                <Navbar.Brand href="/grupo">SGMI</Navbar.Brand>
+                <Navbar.Brand className="titulo" href="/grupo">SGMI</Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarScroll" />
                 <Navbar.Collapse id="navbarScroll">
                     <Nav
@@ -23,10 +23,10 @@ function navbar() {
                         style={{ maxHeight: '100px' }}
                         navbarScroll
                     >
-                        <Nav.Link href="/grupo/planificacion">Planificacion</Nav.Link>
-                        <Nav.Link href="/grupo/planificacion/personal">Personal</Nav.Link>
-                        <Nav.Link href="/grupo/planificacion/proyecto">Proyectos</Nav.Link>
-                        <Nav.Link href="/grupo/planificacion/inventario">Equipamiento</Nav.Link>
+                        <Nav.Link className="link" href="/grupo/planificacion">Planificacion</Nav.Link>
+                        <Nav.Link className="link" href="/grupo/planificacion/personal">Personal</Nav.Link>
+                        <Nav.Link className="link" href="/grupo/planificacion/proyecto">Proyectos</Nav.Link>
+                        <Nav.Link className="link" href="/grupo/planificacion/inventario">Equipamiento</Nav.Link>
                     </Nav>
                     <div className="d-flex align-items-center">
                         <div className="me-2">
@@ -34,7 +34,7 @@ function navbar() {
                         </div>
                         <NavDropdown title="" className="me-2" align="end">
                             <NavDropdown.Item href="/login">
-                                <div className="d-flex align-items-center">
+                                <div className="d-flex-cerrar align-items-center">
                                     <span className="me-2">Cerrar Sesion</span>
                                     <img 
                                         className="iconoCerrarSesion" 
@@ -45,7 +45,7 @@ function navbar() {
                             </NavDropdown.Item>
                         </NavDropdown>
                         <figure className="figure">
-                            <img className="imagen " src={imagenUser} alt="imagen del perfil del usuario" />
+                            <img className="imagen-user" src={imagenUser} alt="imagen del perfil del usuario" />
                         </figure>
                     </div>
                 </Navbar.Collapse>

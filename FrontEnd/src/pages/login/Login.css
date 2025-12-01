@@ -1,26 +1,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Anta&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
-.titulo {
-    font-family: "Anta", sans-serif;
+.login {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    font-family: "Albert Sans", sans-serif;
 }
 
-.imagen-logo {
-    flex-basis: 50%;
+.titulo-login {
+    font-family: "Anta", sans-serif;
+    color: #FF6000;
+    font-size: 65px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.login p {
+    color: #FF6000;
+    margin-top: -10px;
+    font-size: 16px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.login h3 {
+    margin-top: 15px;
+    margin-bottom: 40px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.login .row.container-fluid {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    width: 100%;
+}
+
+.login-container {
+    width: 380px;
+    padding: 25px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-left: 120px;
+}
+
+.imagen {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.imagen {
-    justify-content: center;
+.imagen-iniciar-sesion {
+    width: 600px;
+    max-width: 100%;
 }
 
-.login-container {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.boton-iniciar-sesion {
-    background-color: #2C2C2C;
+.boton-iniciar-sesion:hover {
+    color: #b7b7b7 !important;
 }

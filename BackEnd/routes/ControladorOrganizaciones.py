@@ -51,7 +51,7 @@ def create_grupo():
     if not data:
         return jsonify({'success': False, 'message': 'Invalid JSON'}), 400
     
-    required = ['sigla', 'nombre', 'objetivos']
+    required = ['sigla', 'nombre']
     missing = [f for f in required if f not in data]
     if missing:
         return jsonify({'success': False, 'message': f'Missing fields: {missing}'}), 400
@@ -60,7 +60,7 @@ def create_grupo():
         grupo = Grupo(
             sigla=data['sigla'],
             nombre=data['nombre'],
-            objetivos=data['objetivos'],
+            objetivos=data.get('objetivos'),
             organigrama=data.get('organigrama'),
             correoElectronico=data.get('correoElectronico'),
             director=data.get('director'),

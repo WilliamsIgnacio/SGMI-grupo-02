@@ -14,7 +14,7 @@ export const getGrupos = async () => {
 
 export const getGrupo = async (id) => {
     console.log('obteniendo un solo grupo');
-    const respuesta = await fetch({grupoUrl}/{id});
+    const respuesta = await fetch(`${grupoUrl}/${id}`);
     if (!respuesta.ok) {
         const errorRespuesta = `No fue posible obtener los grupos. Código de estado: ${respuesta.status}`;
         throw new Error(errorRespuesta);
@@ -25,6 +25,9 @@ export const getGrupo = async (id) => {
 export const createGrupo = async (grupoData) => {
     const response = await fetch(grupoUrl, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', 
+        },
         body: JSON.stringify(grupoData),
     });
     if (!response.ok) {
@@ -36,6 +39,9 @@ export const createGrupo = async (grupoData) => {
 export const updateGrupo = async (id, grupoData) => {
     const response = await fetch(`${grupoUrl}/${id}`, {
         method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json', 
+        },
         body: JSON.stringify(grupoData),
     });
     if (!response.ok) {

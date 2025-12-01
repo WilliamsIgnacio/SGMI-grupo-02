@@ -1,4 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: "Albert Sans", sans-serif;
+}
+
+
 .imagenMas {
     width: 13px;
     display: block;
+}
+
+.titulo-proyecto {
+    margin-left: 50px;
+}
+
+.titulo-grupo-proyecto {
+    margin-left: 50px;
+    color: #F37F32;
 }

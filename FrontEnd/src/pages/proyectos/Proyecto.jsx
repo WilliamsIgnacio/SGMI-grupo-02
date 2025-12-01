@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom"
 import CabeceraTabla from "../../components/CabeceraTabla"
 import Boton from "../../components/Boton";
@@ -12,48 +12,142 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Pagination from 'react-bootstrap/Pagination';
+import imagenEliminar from "../../images/eliminar.png"
+import imagenModificar from "../../images/modificar.png"
 
 function Proyecto() {
 
-    const [modalShow, setModalShow] = React.useState(false);
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const [codigoFilaSeleccionada, setCodigoFilaSeleccionada] = useState(null);
+    const [paginaActual, setPaginaActual] = useState(1);
+    const elementosPorPagina = 5;
 
-    const columnas = ["Codigo", "Nombre", "Fecha de Inicio", "Fecha de Fin"];
-    const datosPrueba = [["001", "Curso 1", "29-10-25", "31-12-25"], ["002", "Curso 2", "10-11-25", "31-03-26"]];
+    const datosProyectoOriginales = [
+        ["001", "Curso 1", "29-10-25", "31-12-25"],
+        ["002", "Curso 2", "10-11-25", "31-03-26"],
+        ["003", "Taller A", "01-01-26", "30-06-26"],
+        ["004", "Seminario B", "15-02-26", "15-05-26"],
+        ["005", "Implementación X", "01-03-26", "31-08-26"],
+        ["006", "Capacitación Z", "10-04-26", "10-07-26"],
+        ["007", "Desarrollo Alpha", "20-05-26", "20-10-26"],
+        ["008", "Revisión Beta", "01-07-26", "30-09-26"],
+    ];
 
-    const [modalInfo, setModalInfo] = React.useState({
+    const columnas = ["Selección", "Código", "Nombre", "Fecha de Inicio", "Fecha de Fin", "Acciones"];
+
+    const [informacionModal, setInformacionModal] = React.useState({
         titulo: '',
         contenido: null
     })
-    
+
+    const manejarSeleccionFila = (codigo) => {
+        setCodigoFilaSeleccionada(prevCodigo => prevCodigo === codigo ? null : codigo);
+    };
+
+    const modificarProyecto = (datosFila) => {
+        console.log("Modificar:", datosFila);
+        setInformacionModal({
+            titulo: `Modificar Proyecto: ${datosFila[1]}`,
+            contenido: (
+                <div>
+                    <p>Formulario para modificar el proyecto: **{datosFila[1]}**</p>
+                    <Button variant="primary" onClick={() => setMostrarModal(false)}>Cerrar</Button>
+                </div>
+            )
+        });
+        setMostrarModal(true);
+    };
+
+    const eliminarProyecto = (datosFila) => {
+        console.log("Eliminar:", datosFila);
+        setInformacionModal({
+            titulo: "Eliminar Proyecto",
+            contenido: (
+                <div>
+                    <p>¿Estás seguro de que quieres eliminar el proyecto **{datosFila[1]}**?</p>
+                    <Button variant="danger" onClick={() => { setMostrarModal(false); }}>Eliminar</Button>
+                    <Button variant="secondary" onClick={() => setMostrarModal(false)} className="ms-2">Cancelar</Button>
+                </div>
+            )
+        });
+        setMostrarModal(true);
+    };
+
+    const totalPaginas = Math.ceil(datosProyectoOriginales.length / elementosPorPagina);
+
+    const datosPaginados = useMemo(() => {
+        const indiceInicio = (paginaActual - 1) * elementosPorPagina;
+        const indiceFin = indiceInicio + elementosPorPagina;
+        return datosProyectoOriginales.slice(indiceInicio, indiceFin);
+    }, [datosProyectoOriginales, paginaActual, elementosPorPagina]);
+
+    const filasTablaFinal = datosPaginados.map(fila => {
+        const codigo = fila[0];
+        const estaSeleccionado = codigoFilaSeleccionada === codigo;
+
+        const seleccion = (
+            <Form.Check
+                type="radio" 
+                name="seleccionProyecto" 
+                checked={estaSeleccionado}
+                onChange={() => manejarSeleccionFila(codigo)}
+            />
+        );
+
+        const botonModificar = (
+            <BotonAgregar accion={() => iniciarModificacion(grupoId)}>
+                <img src={imagenModificar} alt="icono modificar" style={{width: '15px'}} />
+            </BotonAgregar>
+        
+        );
+        
+        const botonEliminar = (
+            <BotonAgregar accion={() => manejarEliminacion(grupoId, grupoNombre)}>
+                <img src={imagenEliminar} alt="icono eliminar" style={{width: '15px'}} />
+            </BotonAgregar>
+            
+        );
+
+        const acciones = (
+            <div style={{ display: 'flex', gap: '5px' }}>
+                {botonModificar}
+                {botonEliminar} 
+            </div>
+        );
+
+        return [seleccion, ...fila, acciones];
+    });
+
 
     function agregarProyecto() {
-        setModalInfo({
+        setInformacionModal({
             titulo: "Agregar Proyecto",
             contenido: (
                 <div>
                     <Form>
                         <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formGridNombre">
+                            <Form.Group as={Col} controlId="controlNombre">
                                 <Form.Label>Nombre</Form.Label>
                                 <Form.Control placeholder="Nombre del Curso" />
                             </Form.Group>
                         </Row>
 
                         <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formGridFecha">
+                            <Form.Group as={Col} controlId="controlFechaInicio">
                                 <Form.Label>Fecha de Inicio</Form.Label>
-                                <Form.Control type="fecha" placeholder="p. ej: 10/11/2025" />
+                                <Form.Control type="date" placeholder="p. ej: 10/11/2025" />
                             </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridFecha">
+                            <Form.Group as={Col} controlId="controlFechaFin">
                                 <Form.Label>Fecha de Fin</Form.Label>
-                                <Form.Control type="fecha" placeholder="p. ej: 10/12/2025" />
+                                <Form.Control type="date" placeholder="p. ej: 10/12/2025" />
                             </Form.Group>
                         </Row>
 
                         <Row className="mb-3">
                             <Form.Label>Descripcion</Form.Label>
-                            <FloatingLabel controlId="floatingTextarea2">
+                            <FloatingLabel controlId="controlDescripcion" label="Descripción del Proyecto">
                                 <Form.Control
                                     as="textarea"
                                     style={{ height: '75px' }}
@@ -68,92 +162,120 @@ function Proyecto() {
                 </div>
             )
         });
-        setModalShow(true);     
+        setMostrarModal(true);     
     }
 
     function verDescripcion() {
-        setModalInfo({
-            titulo: "Descripcion",
+        const descripcionContenido = codigoFilaSeleccionada 
+            ? `Mostrando descripción para el código: ${codigoFilaSeleccionada}` 
+            : 'Por favor, selecciona una fila para ver la descripción.';
+
+        setInformacionModal({
+            titulo: "Descripción del Proyecto",
             contenido: (
                 <div>
-                    <p>VER DESCRIPCION</p>
+                    <p>**{descripcionContenido}**</p>
+                    <Button variant="secondary" onClick={() => setMostrarModal(false)}>Cerrar</Button>
                 </div>
             )
         });
-        setModalShow(true);
+        setMostrarModal(true);
     }
 
     function modificarLogros() {
-        setModalInfo({
+        setInformacionModal({
             titulo: "Modificar Logros",
             contenido: (
                 <div>
-                    <FloatingLabel controlId="floatingTextarea2">
+                    <FloatingLabel controlId="controlLogros">
                         <Form.Control
                             as="textarea"
                             style={{ height: '200px' }}
                         />
                     </FloatingLabel>
-                    <button type="button">Aceptar</button>
+                    <button type="button" onClick={() => setMostrarModal(false)}>Aceptar</button>
                 </div>
             )
         });
-        setModalShow(true);
+        setMostrarModal(true);
     }
 
     function verLogros() {
-        setModalInfo({
+        setInformacionModal({
             titulo: "Logros",
             contenido: (
                 <div>
-                    <p>aca van los logros</p>
+                    <p>aca van los logros del proyecto seleccionado: {codigoFilaSeleccionada || 'N/A'}</p>
                     <Boton texto={"Modificar"} accion={modificarLogros}></Boton>
                 </div>
             )
         });
-        setModalShow(true);
+        setMostrarModal(true);
         
     }
 
     function modificarDificultades() {
-        setModalInfo({
+        setInformacionModal({
             titulo: "Modificar Dificultades",
             contenido: (
                 <div>
-                    <FloatingLabel controlId="floatingTextarea2">
+                    <FloatingLabel controlId="controlDificultades">
                         <Form.Control
                             as="textarea"
                             style={{ height: '200px' }}
                         />
                     </FloatingLabel>
-                    <button type="button">Aceptar</button>
+                    <button type="button" onClick={() => setMostrarModal(false)}>Aceptar</button>
                 </div>
             )
         });
-        setModalShow(true);
+        setMostrarModal(true);
     }
 
     function verDificultades() {
-        setModalInfo({
+        setInformacionModal({
             titulo: "Dificultades",
             contenido: (
                 <div>
-                    <p>Aca se ven las Dificultades</p>
+                    <p>Aca se ven las Dificultades del proyecto seleccionado: {codigoFilaSeleccionada || 'N/A'}</p>
                     <Boton texto={"Modificar"} accion={modificarDificultades}></Boton>
                 </div>
             )
         });
-        setModalShow(true);
+        setMostrarModal(true);
+    }
+
+    const renderizarPaginacion = () => {
+        let items = [];
+        for (let numero = 1; numero <= totalPaginas; numero++) {
+            items.push(
+                <Pagination.Item 
+                    key={numero} 
+                    active={numero === paginaActual} 
+                    onClick={() => setPaginaActual(numero)}
+                >
+                    {numero}
+                </Pagination.Item>,
+            );
+        }
+
+        return (
+            <Pagination className="justify-content-center mt-3">
+                <Pagination.Prev onClick={() => setPaginaActual(paginaActual - 1)} disabled={paginaActual === 1} />
+                {items}
+                <Pagination.Next onClick={() => setPaginaActual(paginaActual + 1)} disabled={paginaActual === totalPaginas} />
+            </Pagination>
+        );
     }
 
     return (
-        <div>
+        <div className="Proyecto">
             <div>
-                <h1>
+                <h1 className="titulo-proyecto">
                     Proyectos
                 </h1>
-                <p>
-                    Grupo S.M.O.P
+                <p className="titulo-grupo-proyecto">
+                    Grupo 1
                 </p>
             </div>
             <div>
@@ -171,38 +293,35 @@ function Proyecto() {
                     <div className="col-8">
                         <Tabla
                             columnas={columnas}
-                            filas = {datosPrueba} 
+                            filas = {filasTablaFinal} 
                         >
                         </Tabla>
+                        {renderizarPaginacion()}
                     </div>
                     <div className="col-1"></div>
                 </div>
 
-                <div className="row container-fluid">
-                    <div className="col-4">
+                <div className="row container-fluid mt-3 align-items-center justify-content-between">
+                    <div className="col-auto"> 
                         <Boton texto={"Volver"}></Boton>
                     </div>
-                    <div className="col-3">
-                        <Boton texto={"Ver Descripcion"} accion={verDescripcion}></Boton>
+
+                    <div className="col-auto d-flex ms-auto gap-3"> 
+                        <Boton texto={"Ver Descripcion"} accion={verDescripcion} />
+                        <Boton texto={"Ver Logros"} accion={verLogros} />
+                        <Boton texto={"Ver Dificultades"} accion={verDificultades} />
                     </div>
-                    <div className="col-3">
-                        <Boton texto={"Ver Logros"} accion={verLogros}></Boton>
-                    </div>
-                    <div className="col-2">
-                        <Boton texto={"Ver Dificultades"} accion={verDificultades}></Boton>
-                    </div>
-                    
                 </div>
 
                 <ModalFormularios
-                    show={modalShow}
-                    onHide={() => setModalShow(false)}
-                    titulo={modalInfo.titulo}
+                    show={mostrarModal}
+                    onHide={() => setMostrarModal(false)}
+                    titulo={informacionModal.titulo}
                 >
-                    {modalInfo.contenido}
+                    {informacionModal.contenido}
                 </ModalFormularios>
             </div>
-        </div>    
+        </div>     
     )
 }
 

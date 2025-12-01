@@ -27,7 +27,7 @@ function Grupo() {
 
     const [grupos, setGrupos] = React.useState([]);
 
-    const columnas = ["Sigla", "Nombre", "Unidad Academica", "Director/a", "Vicedirector/a", "Correo Electronico"];
+    const columnas = ["Sigla", "Nombre", "Unidad Academica", "Director/a", "Vicedirector/a", "Correo Electronico", "Acciones"];
     const filasPrueba = [
         ["S.M.O.P", "Smooth Operator", "Ferrari", "Carlos Sainz JR.", "Charles Leclerc", "ferrari@gmail.com"],
         ["L.I.N.S.I", "Laboratorio de ingenieria en sistemas de informacion", "frlp", "Milagros Crespo", "Martina Garcia", "linsi@hotmail.com"] ];
@@ -44,26 +44,52 @@ function Grupo() {
         fetchGrupos();
     }, []);
 
+    useEffect(() => {
+        fetchGrupos();
+    }, []);
+
     const fetchGrupos = async () => {
         try {
             const data = await getGrupos();
             setGrupos(data);
-            console.log("Grupos obtenidos exitosamente");
+            console.log(data);
         } catch (error) {
             console.error("Error al obtener los grupos:", error);
         }
     };
 
-    const filasTabla = grupos.map(grupo => [
-        grupo.sigla, 
-        grupo.nombre, 
-        grupo.unidad_academica, 
-        grupo.director, 
-        grupo.vicedirector, 
-        grupo.correo, 
-    ]);
+    const filasTabla = grupos.map(grupo => {
 
-    const [grupoModificarID, setGrupoModificarId] = useState(null)
+        const grupoId = grupo.id; 
+
+        const botonModificar = (
+            <Boton 
+                texto={"Modificar"} 
+                accion={() => iniciarModificacion(grupoId)}
+            />
+        );
+
+        return [
+            grupo.sigla, 
+            grupo.nombre, 
+            grupo.unidad_academica, 
+            grupo.director, 
+            grupo.vicedirector, 
+            grupo.correo,
+            botonModificar 
+        ];
+    });
+
+    const [grupoFormularioData, setGrupoFormularioData] = useState({ 
+        sigla: '',
+        nombre: '',
+        unidad_academica: '',
+        director: '',
+        vicedirector: '',
+        correo: ''
+    });
+
+    const [grupoModificarId, setGrupoModificarId] = useState(null)
 
     const [nuevoGrupoData, setNuevoGrupoData] = useState({
         sigla: '',
@@ -107,7 +133,155 @@ function Grupo() {
         }
     };
 
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+
+        if (!grupoModificarId) {
+            console.error("No hay ID de grupo para actualizar.");
+            return;
+        }
+
+        try {
+            console.log(`Actualizando grupo ID: ${grupoModificarId} con datos:`, grupoFormularioData);
+
+            await updateGrupo(grupoModificarId, grupoFormularioData);
+
+            await fetchGrupos(); 
+
+            setGrupoEditandoId(null);
+            setGrupoFormularioData({ 
+                sigla: '', nombre: '', unidad_academica: '', 
+                director: '', vicedirector: '', correo: ''
+            });
+
+            setModalShow(false); 
+
+        } catch (error) {
+            console.error("Error al modificar el grupo:", error);
+            alert(`Error al modificar el grupo: ${error.message}`);
+        }
+    };
     
+    const iniciarModificacion = async (id) => {
+        try {
+            const grupoAModificar = await getGrupo(id);
+            
+            setGrupoEditandoId(id); 
+            
+            setGrupoFormularioData({
+                sigla: grupoAModificar.sigla || '',
+                nombre: grupoAModificar.nombre || '',
+                unidadAcademica: grupoAModificar.unidad_academica || '',
+                director: grupoAModificar.director || '',
+                vicedirector: grupoAModificar.vicedirector || '',
+                correo: grupoAModificar.correo || '',
+            });
+
+            mostrarFormularioModificacion(grupoAModificar.nombre); 
+
+        } catch (error) {
+            console.error("Error al cargar datos para modificar:", error);
+            alert(`No se pudo cargar el grupo para edición: ${error.message}`);
+        }
+    };
+
+    const mostrarFormularioModificacion = (nombreGrupo) => {
+        setModalInfo({
+            titulo: `Modificar Grupo: ${nombreGrupo}`,
+            contenido: (
+                <Form onSubmit={handleUpdate}>
+                    <FormularioGrupoContent 
+                        data={grupoFormularioData} 
+                        handleChange={handleFormChange}
+                        isModifying={true}
+                    />
+                </Form>
+            )
+        });
+        setModalShow(true);
+    };
+
+    const FormularioGrupoContent = ({ data, handleChange, isModifying }) => (
+        <>
+            <Row className="mb-3">
+                <Form.Group as={Col} controlId="sigla"> 
+                    <Form.Label>Sigla</Form.Label>
+                    <Form.Control 
+                        type="text" 
+                        placeholder="Sigla del grupo" 
+                        id="sigla"
+                        value={data.sigla}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="nombre">
+                    <Form.Label>Nombre</Form.Label>
+                    <Form.Control 
+                        type="text" 
+                        placeholder="Nombre del Grupo" 
+                        id="nombre"
+                        value={data.nombre}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+            </Row>
+
+            <Form.Group className="mb-3" controlId="unidadAcademica">
+                <Form.Label>Unidad Académica</Form.Label>
+                <Form.Control 
+                    placeholder="p. ej: Facultad Regional La Plata" 
+                    id="unidadAcademica"
+                    value={data.unidad_academica}
+                    onChange={handleChange}
+                    required
+                />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="correo">
+                <Form.Label>Correo Electrónico</Form.Label>
+                <Form.Control 
+                    type="email" 
+                    placeholder="correogrupo@gmail.com" 
+                    id="correo"
+                    value={data.correo}
+                    onChange={handleChange}
+                    required
+                />
+            </Form.Group>
+
+            <Row className="mb-3">
+                <Form.Group as={Col} controlId="director">
+                <Form.Label>Director/a</Form.Label>
+                <Form.Control 
+                    placeholder="Nombre y Apellido"
+                    id="director"
+                    value={data.director}
+                    onChange={handleChange}
+                    required
+                />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="vicedirector">
+                <Form.Label>Vicedirector/a</Form.Label>
+                <Form.Control 
+                    placeholder="Nombre y Apellido"
+                    id="vicedirector"
+                    value={data.vicedirector}
+                    onChange={handleChange}
+                    required
+                />
+                </Form.Group>
+            </Row>
+            <div style={{ textAlign: 'right', marginTop: '15px' }}>
+                <Button variant="primary" type="submit">
+                    {isModifying ? "Guardar Cambios" : "Agregar Grupo"}
+                </Button>
+            </div>
+        </>
+    );
 
     //funcion botones + ventanas pop up
 
@@ -168,6 +342,10 @@ function Grupo() {
     }
 
     function agregarGrupo(){
+
+        setGrupoModificarId(null),
+        setGrupoFormularioData({sigla: '', nombre: '', unidad_academica: '', director: '', vicedirector: '', correo: ''})
+
         setModalInfo({
             titulo: "Agregar Grupo",
             contenido: (
@@ -298,7 +476,6 @@ function Grupo() {
         navigate("planificacion");
     }
 
-
     return (
         <div>
             <div>
@@ -317,8 +494,8 @@ function Grupo() {
                     <div className="col-10">
                         <Tabla 
                             columnas={columnas}
-                            //filas={filasTabla}
-                            filas={filasPrueba}
+                            filas={filasTabla}
+                            //filas={filasPrueba}
                         >
                         </Tabla>
                     </div>

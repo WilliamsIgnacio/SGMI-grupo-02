@@ -32,6 +32,9 @@ def list_grupos():
                 'nombre': g.nombre,
                 'objetivos': g.objetivos,
                 'organigrama': g.organigrama,
+                'correoElectronico': g.correoElectronico,
+                'director': g.director,
+                'vicedirector': g.vicedirector,
                 'consejo_ejecutivo': g.consejo_ejecutivo,
                 'unidad_academica': g.unidad_academica
             })
@@ -59,6 +62,9 @@ def create_grupo():
             nombre=data['nombre'],
             objetivos=data['objetivos'],
             organigrama=data.get('organigrama'),
+            correoElectronico=data.get('correoElectronico'),
+            director=data.get('director'),
+            vicedirector=data.get('vicedirector'),
             consejo_ejecutivo=data.get('consejo_ejecutivo'),
             unidad_academica=data.get('unidad_academica')
         )
@@ -92,6 +98,9 @@ def get_grupo(grupo_id):
             'nombre': grupo.nombre,
             'objetivos': grupo.objetivos,
             'organigrama': grupo.organigrama,
+            'correoElectronico': grupo.correoElectronico,
+            'director': grupo.director,
+            'vicedirector': grupo.vicedirector,
             'consejo_ejecutivo': grupo.consejo_ejecutivo,
             'unidad_academica': grupo.unidad_academica
         }), 200
@@ -113,6 +122,7 @@ def update_grupo(grupo_id):
         
         # Update allowed fields
         allowed_fields = ['sigla', 'nombre', 'objetivos', 'organigrama',
+                         'correoElectronico', 'director', 'vicedirector',
                          'consejo_ejecutivo', 'unidad_academica']
         for field in allowed_fields:
             if field in data:
@@ -280,6 +290,9 @@ def get_grupo_detalle(grupo_id):
             'nombre': grupo.nombre,
             'objetivos': grupo.objetivos,
             'organigrama': grupo.organigrama,
+            'correoElectronico': grupo.correoElectronico,
+            'director': grupo.director,
+            'vicedirector': grupo.vicedirector,
             'consejo_ejecutivo': grupo.consejo_ejecutivo,
             'unidad_academica': grupo.unidad_academica,
             'miembros': []

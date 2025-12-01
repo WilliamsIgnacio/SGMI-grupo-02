@@ -105,6 +105,9 @@ def crear_grupo(session):
                   "inteligencia artificial aplicada a servicios públicos, y transformación digital.",
         organigrama="Director - Subdirector - Investigadores Senior - Investigadores Junior - "
                    "Becarios - Personal de Apoyo - Colaboradores Externos",
+        correoElectronico="gidag@unc.edu.ar",
+        director="Dr. Juan Pérez",
+        vicedirector="Dra. María González",
         consejo_ejecutivo="Dr. Juan Pérez (Director), Dra. María González (Subdirectora), "
                          "Ing. Carlos Rodríguez, Lic. Ana Martínez",
         unidad_academica="Facultad de Ingeniería - Departamento de Computación"

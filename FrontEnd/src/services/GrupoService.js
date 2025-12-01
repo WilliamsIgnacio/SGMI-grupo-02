@@ -44,7 +44,7 @@ export const updateGrupo = async (id, grupoData) => {
     return response.json();
 };
 
-export const deletePedido = async (id,) => {
+export const deleteGrupo = async (id,) => {
     const response = await fetch(`${grupoUrl}/${id}`, {
         method: 'DELETE',
     });

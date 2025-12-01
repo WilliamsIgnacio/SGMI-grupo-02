@@ -3,12 +3,15 @@ import { useParams, useNavigate } from "react-router-dom"
 import "./Grupo.css";
 import { useState } from "react";
 
-
 import CabeceraTabla from "../../components/CabeceraTabla";
 import Tabla from "../../components/Tabla";
 import Boton from "../../components/Boton";
 import BotonAgregar from "../../components/BotonAgregar";
 import imagenMas from "../../images/mas.png";
+
+import { getGrupos, getGrupo, createGrupo, updateGrupo, deleteGrupo } from "../../services/GrupoService";
+
+//componentes bootstrap
 import ModalFormularios from "../../components/ModalFormularios";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
@@ -16,7 +19,6 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
-import { getGrupos } from "../../services/GrupoService";
 
 
 function Grupo() {
@@ -28,14 +30,15 @@ function Grupo() {
     const columnas = ["Sigla", "Nombre", "Unidad Academica", "Director/a", "Vicedirector/a", "Correo Electronico"];
     const filasPrueba = [
         ["S.M.O.P", "Smooth Operator", "Ferrari", "Carlos Sainz JR.", "Charles Leclerc", "ferrari@gmail.com"],
-        ["L.I.N.S.I", "Laboratorio de ingenieria en sistemas de informacion", "frlp", "Milagros Crespo", "Martina Garcia", "linsi@hotmail.com"]
-    ];
+        ["L.I.N.S.I", "Laboratorio de ingenieria en sistemas de informacion", "frlp", "Milagros Crespo", "Martina Garcia", "linsi@hotmail.com"] ];
+    
 
     const [modalInfo, setModalInfo] = React.useState({
         titulo: '',
         contenido: null
     })
 
+    //manejar los grupos
 
     useEffect(() => {
         fetchGrupos();
@@ -45,12 +48,68 @@ function Grupo() {
         try {
             const data = await getGrupos();
             setGrupos(data);
-            console.log(data);
+            console.log("Grupos obtenidos exitosamente");
         } catch (error) {
             console.error("Error al obtener los grupos:", error);
         }
     };
 
+    const filasTabla = grupos.map(grupo => [
+        grupo.sigla, 
+        grupo.nombre, 
+        grupo.unidad_academica, 
+        grupo.director, 
+        grupo.vicedirector, 
+        grupo.correo, 
+    ]);
+
+    const [grupoModificarID, setGrupoModificarId] = useState(null)
+
+    const [nuevoGrupoData, setNuevoGrupoData] = useState({
+        sigla: '',
+        nombre: '',
+        unidad_academica: '',
+        director: '',
+        vicedirector: '',
+        correo: ''
+    });
+
+    const handleFormulario = (e) => {
+        const { id, value } = e.target;
+        setNuevoGrupoData(prevData => ({
+            ...prevData,
+            [id]: value
+        }));
+    } 
+
+    const handleSubmit = async (e) => {
+    e.preventDefault(); 
+
+        try {
+            console.log("Enviando datos del nuevo grupo:", nuevoGrupoData);
+
+            await createGrupo(nuevoGrupoData);
+            setNuevoGrupoData({
+                sigla: '',
+                nombre: '',
+                unidad_academica: '',
+                director: '',
+                vicedirector: '',
+                correo: ''
+            });
+
+            await fetchGrupos(); 
+            setModalShow(false); 
+            
+        } catch (error) {
+            console.error("Error al crear el grupo:", error);
+            alert(`Error al crear el grupo: ${error.message}`);
+        }
+    };
+
+    
+
+    //funcion botones + ventanas pop up
 
     function modificarObjetivos() {
         setModalInfo({
@@ -108,59 +167,90 @@ function Grupo() {
         setModalShow(true);
     }
 
-
     function agregarGrupo(){
         setModalInfo({
             titulo: "Agregar Grupo",
             contenido: (
                 <div>
-                    <Form>
+                    <Form onSubmit={handleSubmit}>
                         <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formGridSigla">
+                            <Form.Group as={Col} controlId="sigla">
                                 <Form.Label>Sigla</Form.Label>
-                                <Form.Control type="sigla" placeholder="Sigla del grupo" />
+                                <Form.Control 
+                                    type="text" 
+                                    placeholder="Sigla del grupo" 
+                                    id="sigla"
+                                    value={setNuevoGrupoData.sigla}
+                                    onChange={handleFormulario}
+                                />
                             </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridNombre">
+                            <Form.Group as={Col} controlId="nombre">
                                 <Form.Label>Nombre</Form.Label>
-                                <Form.Control type="nombreGrupo" placeholder="Nombre del Grupo" />
+                                <Form.Control 
+                                    type="text" 
+                                    placeholder="Nombre del Grupo"
+                                    id="nombre"
+                                    value={setNuevoGrupoData.nombre}
+                                    onChange={handleFormulario}
+                                />
                             </Form.Group>
                         </Row>
 
-                        <Form.Group className="mb-3" controlId="formGridUnidadAcademica">
+                        <Form.Group className="mb-3" controlId="unidad_academica">
                             <Form.Label>Unidad Académica</Form.Label>
-                            <Form.Control placeholder="p. ej: Facultad Regional La Plata" />
+                            <Form.Control 
+                                placeholder="p. ej: Facultad Regional La Plata" 
+                                id="unidad_academica"
+                                value={setNuevoGrupoData.unidad_academica}
+                                onChange={handleFormulario}    
+                            />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formGridEmail">
+                        <Form.Group className="mb-3" controlId="correo">
                             <Form.Label>Correo Electrónico</Form.Label>
-                            <Form.Control placeholder="correogrupo@gmail.com" />
+                            <Form.Control 
+                                type="email"
+                                placeholder="correogrupo@gmail.com"
+                                id="correo"
+                                value={setNuevoGrupoData.correo}
+                                onChange={handleFormulario}
+                            />
                         </Form.Group>
 
                         <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formGridDirector">
+                            <Form.Group as={Col} controlId="director">
                             <Form.Label>Director/a</Form.Label>
-                            <Form.Control placeholder="Nombre y Apellido"/>
+                            <Form.Control 
+                                type="text" 
+                                placeholder="Nombre y Apellido"
+                                id="director"
+                                value={setNuevoGrupoData.director}
+                                onChange={handleFormulario}    
+                            />
                             </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridVicedirector">
+                            <Form.Group as={Col} controlId="vicedirector">
                             <Form.Label>Vicedirector/a</Form.Label>
-                            <Form.Control placeholder="Nombre y Apellido"/>
+                            <Form.Control
+                                type="text" 
+                                placeholder="Nombre y Apellido"
+                                id="vicedirector"
+                                value={setNuevoGrupoData.vicedirector}
+                                onChange={handleFormulario}
+                            />
                             </Form.Group>
                         </Row>
-
-                        <Button variant="primary" type="submit">
-                            Agregar
-                        </Button>
+                        <div style={{textAlign: 'right', marginTop: '15px'}}>
+                            <Button variant="primary" type="submit" style={{backgroundColor: '#7b7b7b', borderColor: '#7b7b7b'}}>
+                                Agregar
+                            </Button>
+                        </div>
                     </Form>
                 </div>
             )
         });
         setModalShow(true);
-    }
-
-    function verPlanificacion(){
-        navigate("planificacion");
     }
 
     function verObjetivos(){
@@ -204,6 +294,11 @@ function Grupo() {
         setModalShow(true);
     }
 
+    function verPlanificacion(){
+        navigate("planificacion");
+    }
+
+
     return (
         <div>
             <div>
@@ -222,6 +317,7 @@ function Grupo() {
                     <div className="col-10">
                         <Tabla 
                             columnas={columnas}
+                            //filas={filasTabla}
                             filas={filasPrueba}
                         >
                         </Tabla>

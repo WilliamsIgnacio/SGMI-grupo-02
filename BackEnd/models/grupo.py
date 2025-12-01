@@ -13,7 +13,7 @@ class Grupo(db.Model):
     nombre = Column(String, nullable=False)
     objetivos = Column(Text, nullable=False)
     organigrama = Column(String)
-    correoElectronico = Column(String)
+    correoElectronico = Column('correo_electronico',String)
     director = Column(String)
     vicedirector = Column(String)
     consejo_ejecutivo = Column(String)

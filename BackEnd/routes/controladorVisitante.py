@@ -23,6 +23,7 @@ class ControladorVisitante(MethodView):
                 nombre=data.get('nombre'),
                 apellido=data.get('apellido'),
                 horas=data.get('horas'),
+                correo_electronico=data.get('correoElectronico'),
                 gradoAcademicoId=data.get('gradoAcademicoId'),
                 institucionId=data.get('institucionId'),
 
@@ -58,6 +59,7 @@ class ControladorVisitante(MethodView):
             visitante.nombre = data.get('nombre', visitante.nombre)
             visitante.apellido = data.get('apellido', visitante.apellido)
             visitante.horas = data.get('horas', visitante.horas)
+            visitante.correo_electronico = data.get('correoElectronico', visitante.correo_electronico)
             visitante.institucionId = data.get('institucionId', visitante.institucionId)
 
             db.session.commit()

@@ -23,6 +23,7 @@ class ControladorSoporte(MethodView):
                 nombre=data.get('nombre'),
                 apellido=data.get('apellido'),
                 horas=data.get('horas'),
+                correo_electronico=data.get('correoElectronico'),
                 gradoAcademicoId=data.get('gradoAcademicoId'),
                 institucionId=data.get('institucionId'),
 
@@ -58,6 +59,7 @@ class ControladorSoporte(MethodView):
             soporte.nombre = data.get('nombre', soporte.nombre)
             soporte.apellido = data.get('apellido', soporte.apellido)
             soporte.horas = data.get('horas', soporte.horas)
+            soporte.correo_electronico = data.get('correoElectronico', soporte.correo_electronico)
             soporte.institucionId = data.get('institucionId', soporte.institucionId)
 
             db.session.commit()

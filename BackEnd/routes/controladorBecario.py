@@ -23,6 +23,7 @@ class ControladorBecario(MethodView):
                 nombre=data.get('nombre'),
                 apellido=data.get('apellido'),
                 horas=data.get('horas'),
+                correo_electronico=data.get('correoElectronico'),
                 gradoAcademicoId=data.get('gradoAcademicoId'),
                 institucionId=data.get('institucionId'),
 
@@ -58,6 +59,7 @@ class ControladorBecario(MethodView):
             becario.nombre = data.get('nombre', becario.nombre)
             becario.apellido = data.get('apellido', becario.apellido)
             becario.horas = data.get('horas', becario.horas)
+            becario.correo_electronico = data.get('correoElectronico', becario.correo_electronico)
             becario.institucionId = data.get('institucionId', becario.institucionId)
 
             db.session.commit()

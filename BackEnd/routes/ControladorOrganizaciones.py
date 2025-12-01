@@ -36,7 +36,7 @@ def list_grupos():
                 'director': g.director,
                 'vicedirector': g.vicedirector,
                 'consejo_ejecutivo': g.consejo_ejecutivo,
-                'unidad_academica': g.unidad_academica
+                'unidad_academica': g.unidad_academica,
             })
         
         return jsonify(result), 200

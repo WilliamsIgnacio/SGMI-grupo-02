@@ -27,6 +27,8 @@ class PersonaGrupo(db.Model):
                 'id': self.persona,
                 'nombre': self.persona_ref.nombre,
                 'apellido': self.persona_ref.apellido,
+                'horas': self.persona_ref.horas,
+                'object_type': self.persona_ref.__class__.__name__
             },
             'fecha_inicio': self.fecha_inicio,
             'fecha_fin': self.fecha_fin,

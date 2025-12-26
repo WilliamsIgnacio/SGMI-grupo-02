@@ -8,3 +8,12 @@
     align-items: center;
     gap: 8px;
 }
+
+.boton.btn-primary:hover {
+    background-color: #b7b7b7;
+    border-color: #b7b7b7;
+}
+
+.boton.btn-primary:hover {
+    color: #fff;
+}

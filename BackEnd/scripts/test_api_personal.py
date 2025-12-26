@@ -1,124 +1,207 @@
-import requests
+"""
+Test script for ControladorPersonal API endpoints
+"""
+import urllib.request
+import urllib.error
 import json
 
-# Configuración
-BASE_URL = 'http://127.0.0.1:5000/api'
-HEADERS = {'Content-Type': 'application/json'}
-INSTITUCION_ID = 1 
+BASE_URL = 'http://127.0.0.1:5000/api/personal'
 
-def print_result(test_name, response, expected_status=[200, 201]):
-    if response.status_code in expected_status:
-        print(f"✅ {test_name}: OK ({response.status_code})")
-        return True
-    else:
-        print(f"❌ {test_name}: FALLÓ ({response.status_code})")
-        print(f"   Respuesta: {response.text}")
-        return False
+def make_request(url, method='GET', data=None):
+    """Helper function to make HTTP requests using urllib."""
+    headers = {'Content-Type': 'application/json'}
+    
+    if data:
+        data = json.dumps(data).encode('utf-8')
+    
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            response_data = response.read().decode('utf-8')
+            return json.loads(response_data) if response_data else {}, response.status
+    except urllib.error.HTTPError as e:
+        error_data = e.read().decode('utf-8')
+        return json.loads(error_data) if error_data else {}, e.code
 
-def verify_change(entity_name, field, expected_value, response_json):
-    actual_value = response_json[entity_name].get(field)
-    # CORRECCIÓN: Convertimos ambos a string para comparar sin importar si es int o str
-    if str(actual_value) == str(expected_value):
-        print(f"   -> 🔍 {entity_name.capitalize()} {field}: Actualizado correctamente a '{actual_value}'")
+def print_result(test_name, status, expected=None):
+    """Print test result."""
+    if expected is None or status == expected:
+        print(f"[OK] {test_name}: {status}")
     else:
-        print(f"   -> ⚠️ {entity_name.capitalize()} {field}: ERROR. Esperaba '{expected_value}', recibió '{actual_value}'")
+        print(f"[ERROR] {test_name}: FALLO ({status}, esperado {expected})")
 
 def run_tests():
+    """Run all Personal API tests."""
     print("="*70)
-    print("🚀 TEST MAESTRO: CRUD COMPLETO DE TODO EL PERSONAL")
+    print("[TEST] CONTROLADOR PERSONAL")
     print("="*70)
-
-    # --- 1. SETUP ---
-    print("\n--- 1. PREPARACIÓN ---")
-    requests.get(f'{BASE_URL}/enums/')
     
-    # Crear Grado
-    res = requests.post(f'{BASE_URL}/grados-academicos/', json={"nombre": "Grado Test"}, headers=HEADERS)
-    if not print_result("Crear Grado", res): return
-    grado_id = res.json().get('id')
-
-    # IDs para limpieza
-    created_ids = {}
-
-    # --- 2. INVESTIGADOR ---
-    print("\n--- 2. INVESTIGADOR ---")
-    payload = {"nombre": "Juan", "apellido": "Inv", "horas": 20, "gradoAcademicoId": grado_id, "institucionId": INSTITUCION_ID, "categoria": "A", "incentivo": "No", "dedicacion": "Parcial"}
-    res = requests.post(f'{BASE_URL}/investigadores/', json=payload, headers=HEADERS)
-    if print_result("Crear", res):
-        id_inv = res.json()['investigador']['id']
-        created_ids['investigadores'] = id_inv
-        
-        # Modificar
-        res = requests.put(f'{BASE_URL}/investigadores/{id_inv}', json={"horas": 50, "categoria": "Super"}, headers=HEADERS)
-        print_result("Modificar", res)
-        verify_change('investigador', 'horas', 50, res.json())
-
-    # --- 3. BECARIO ---
-    print("\n--- 3. BECARIO ---")
-    payload = {"nombre": "Ana", "apellido": "Bec", "horas": 30, "gradoAcademicoId": grado_id, "institucionId": INSTITUCION_ID, "rol": "doctorado"}
-    res = requests.post(f'{BASE_URL}/becarios/', json=payload, headers=HEADERS)
-    if print_result("Crear", res):
-        id_bec = res.json()['becario']['id']
-        created_ids['becarios'] = id_bec
-        
-        # Modificar (Cambiamos el rol y las horas)
-        res = requests.put(f'{BASE_URL}/becarios/{id_bec}', json={"horas": 10, "rol": "pasante"}, headers=HEADERS)
-        print_result("Modificar", res)
-        verify_change('becario', 'rol', 'pasante', res.json())
-
-    # --- 4. PROFESIONAL ---
-    print("\n--- 4. PROFESIONAL ---")
-    payload = {"nombre": "Pedro", "apellido": "Prof", "horas": 40, "gradoAcademicoId": grado_id, "institucionId": INSTITUCION_ID, "especialidad": "Dev", "descripcion": "Junior"}
-    res = requests.post(f'{BASE_URL}/profesionales/', json=payload, headers=HEADERS)
-    if print_result("Crear", res):
-        id_prof = res.json()['profesional']['id']
-        created_ids['profesionales'] = id_prof
-        
-        # Modificar (Cambiamos especialidad)
-        res = requests.put(f'{BASE_URL}/profesionales/{id_prof}', json={"especialidad": "DevOps", "descripcion": "Senior"}, headers=HEADERS)
-        print_result("Modificar", res)
-        verify_change('profesional', 'especialidad', 'DevOps', res.json())
-
-    # --- 5. SOPORTE ---
-    print("\n--- 5. SOPORTE ---")
-    payload = {"nombre": "Luis", "apellido": "Sop", "horas": 35, "gradoAcademicoId": grado_id, "institucionId": INSTITUCION_ID, "rol": "tecnico"}
-    res = requests.post(f'{BASE_URL}/soportes/', json=payload, headers=HEADERS)
-    if print_result("Crear", res):
-        id_sop = res.json()['soporte']['id']
-        created_ids['soportes'] = id_sop
-        
-        # Modificar (Cambiamos rol)
-        res = requests.put(f'{BASE_URL}/soportes/{id_sop}', json={"rol": "administrativo"}, headers=HEADERS)
-        print_result("Modificar", res)
-        verify_change('soporte', 'rol', 'administrativo', res.json())
-
-    # --- 6. VISITANTE ---
-    print("\n--- 6. VISITANTE ---")
-    payload = {"nombre": "Maria", "apellido": "Vis", "horas": 10, "gradoAcademicoId": grado_id, "institucionId": INSTITUCION_ID, "rol": "academica"}
-    res = requests.post(f'{BASE_URL}/visitantes/', json=payload, headers=HEADERS)
-    if print_result("Crear", res):
-        id_vis = res.json()['visitante']['id']
-        created_ids['visitantes'] = id_vis
-        
-        # Modificar (Cambiamos horas)
-        res = requests.put(f'{BASE_URL}/visitantes/{id_vis}', json={"horas": 99}, headers=HEADERS)
-        print_result("Modificar", res)
-        verify_change('visitante', 'horas', 99, res.json())
-
-    # --- 7. LIMPIEZA ---
-    print("\n--- 7. LIMPIEZA ---")
-    for endpoint, pid in reversed(created_ids.items()):
-        requests.delete(f'{BASE_URL}/{endpoint}/{pid}')
-        print(f"🗑️  Borrado {endpoint} ID={pid}")
+    # Variables to store created IDs
+    grupo_id = None
+    investigador_id = None
+    profesional_id = None
+    actividad_id = None
     
-    requests.delete(f'{BASE_URL}/grados-academicos/{grado_id}')
-    print(f"🗑️  Borrado Grado ID={grado_id}")
-
-    print("\n✅ PRUEBA FINALIZADA")
+    try:
+        # 1. Create test grupo (needed for foreign key)
+        print("\n--- 1. SETUP (Grupo y Grado Academico) ---")
+        grupo_data = {
+            'sigla': 'TEST-PERS',
+            'nombre': 'Grupo Test Personal',
+            'objetivos': 'Testing personal endpoints'
+        }
+        grupo_response, status = make_request('http://127.0.0.1:5000/api/organizaciones', 'POST', grupo_data)
+        print_result('Crear Grupo', status, 201)
+        if status == 201 and 'grupo' in grupo_response:
+            grupo_id = grupo_response['grupo']['id']
+            print(f"   -> Grupo ID: {grupo_id}")
+        
+        # 2. Create Investigador
+        print("\n--- 2. CREAR INVESTIGADOR ---")
+        investigador_data = {
+            'nombre': 'Carlos',
+            'apellido': 'Rodriguez',
+            'horas': 40,
+            'objectType': 'investigador',
+            'gradoAcademicoId': 1,  # Assuming grado exists
+            'institucionId': 1,  # Assuming institucion exists
+            'categoria': 'Senior',
+            'incentivo': 'Categoria I',
+            'dedicacion': 'Exclusiva',
+            'email': 'carlos.rodriguez@test.com',
+            'clave': 'test123'
+        }
+        response, status = make_request(BASE_URL, 'POST', investigador_data)
+        print_result('Crear Investigador', status, 201)
+        if status == 201 and 'personal' in response:
+            investigador_id = response['personal']['id']
+            print(f"   -> Investigador ID: {investigador_id}")
+        
+        # 3. List all Personal
+        print("\n--- 3. LISTAR PERSONAL ---")
+        response, status = make_request(BASE_URL, 'GET')
+        print_result('Listar Personal', status, 200)
+        if status == 200:
+            print(f"   -> Total: {len(response)} personas")
+        
+        # 4. Get specific Investigador
+        if investigador_id:
+            print("\n--- 4. OBTENER INVESTIGADOR ---")
+            response, status = make_request(f"{BASE_URL}/{investigador_id}", 'GET')
+            print_result('Obtener Investigador', status, 200)
+            if status == 200:
+                print(f"   -> Nombre: {response.get('nombre')} {response.get('apellido')}")
+                print(f"   -> Categoria: {response.get('categoria')}")
+        
+        # 5. Update Investigador
+        if investigador_id:
+            print("\n--- 5. MODIFICAR INVESTIGADOR ---")
+            update_data = {
+                'categoria': 'Principal',
+                'horas': 45
+            }
+            response, status = make_request(f"{BASE_URL}/{investigador_id}", 'PUT', update_data)
+            print_result('Modificar Investigador', status, 200)
+        
+        # 6. Create Profesional
+        print("\n--- 6. CREAR PROFESIONAL ---")
+        profesional_data = {
+            'nombre': 'Ana',
+            'apellido': 'Martinez',
+            'horas': 30,
+            'objectType': 'profesional',
+            'gradoAcademicoId': 1,
+            'institucionId': 1,
+            'especialidad': 'Desarrollo de Software',
+            'descripcion': 'Especialista en backend',
+            'email': 'ana.martinez@test.com'
+        }
+        response, status = make_request(BASE_URL, 'POST', profesional_data)
+        print_result('Crear Profesional', status, 201)
+        if status == 201 and 'personal' in response:
+            profesional_id = response['personal']['id']
+            print(f"   -> Profesional ID: {profesional_id}")
+        
+        # 7. Create Actividad Docente for Investigador
+        if investigador_id:
+            print("\n--- 7. CREAR ACTIVIDAD DOCENTE ---")
+            actividad_data = {
+                'rol': 'Profesor Titular',
+                'institucionId': 1,
+                'fechaInicio': '2024-01-01',
+                'fechaFin': '2024-12-31'
+            }
+            response, status = make_request(
+                f"{BASE_URL}/{investigador_id}/actividades-docente", 
+                'POST', 
+                actividad_data
+            )
+            print_result('Crear Actividad Docente', status, 201)
+            if status == 201 and 'actividad' in response:
+                actividad_id = response['actividad']['id']
+                print(f"   -> Actividad ID: {actividad_id}")
+        
+        # 8. List Actividades Docentes
+        if investigador_id:
+            print("\n--- 8. LISTAR ACTIVIDADES DOCENTES ---")
+            response, status = make_request(
+                f"{BASE_URL}/{investigador_id}/actividades-docente", 
+                'GET'
+            )
+            print_result('Listar Actividades Docentes', status, 200)
+            if status == 200:
+                print(f"   -> Total: {len(response)} actividades")
+        
+        # 9. Filter by object_type
+        print("\n--- 9. FILTRAR POR TIPO ---")
+        response, status = make_request(f"{BASE_URL}?objectType=investigador", 'GET')
+        print_result('Filtrar Investigadores', status, 200)
+        if status == 200:
+            print(f"   -> Investigadores: {len(response)}")
+        
+        print("\n--- 10. LIMPIEZA ---")
+        
+        # Delete Actividad Docente
+        if investigador_id and actividad_id:
+            response, status = make_request(
+                f"{BASE_URL}/{investigador_id}/actividades-docente/{actividad_id}", 
+                'DELETE'
+            )
+            print_result(f'Borrar Actividad Docente ID={actividad_id}', status, 200)
+        
+        # Delete Profesional
+        if profesional_id:
+            response, status = make_request(f"{BASE_URL}/{profesional_id}", 'DELETE')
+            print_result(f'Borrar Profesional ID={profesional_id}', status, 200)
+        
+        # Delete Investigador
+        if investigador_id:
+            response, status = make_request(f"{BASE_URL}/{investigador_id}", 'DELETE')
+            print_result(f'Borrar Investigador ID={investigador_id}', status, 200)
+        
+        # Delete Grupo
+        if grupo_id:
+            response, status = make_request(
+                f'http://127.0.0.1:5000/api/organizaciones/{grupo_id}', 
+                'DELETE'
+            )
+            print_result(f'Borrar Grupo ID={grupo_id}', status)
+            if status != 200:
+                print(f"   Respuesta: {response}")
+        
+    except Exception as e:
+        print(f"\n[ERROR] Exception: {e}")
+        import traceback
+        traceback.print_exc()
+    
+    print("\n" + "="*70)
+    print("[TEST] CONTROLADOR PERSONAL FINALIZADO")
+    print("="*70)
 
 if __name__ == '__main__':
     try:
-        requests.get(f'{BASE_URL}/hello')
         run_tests()
-    except:
-        print("❌ Error de conexión. Corre 'python app.py' primero.")
+    except Exception as e:
+        print(f"[ERROR] Error de conexion: {e}")
+        print("   Asegurate de que 'app.py' este corriendo en http://127.0.0.1:5000")

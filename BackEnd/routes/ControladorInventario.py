@@ -22,6 +22,26 @@ from models.bibliografia import Bibliografia
 # Create blueprint for inventory management routes
 inventario_bp = Blueprint('inventario', __name__, url_prefix='/api/inventario')
 
+
+def money_to_float(money_value):
+    """Convert PostgreSQL money type to float.
+    Money type can be returned as string '$1,234.56' or as Decimal.
+    """
+    if money_value is None:
+        return 0.0
+    if isinstance(money_value, (int, float)):
+        return float(money_value)
+    if isinstance(money_value, str):
+        # Remove currency symbols and commas
+        cleaned = money_value.replace('$', '').replace(',', '').strip()
+        try:
+            return float(cleaned)
+        except ValueError:
+            return 0.0
+    # Assume it's a Decimal or similar
+    return float(money_value)
+
+
 # Initialize database connection
 def build_db_url():
     database_url = os.getenv('DATABASE_URL')
@@ -76,7 +96,7 @@ def list_equipamiento():
                 'id': eq.id,
                 'denominacion': eq.denominacion,
                 'fecha_ingreso': eq.fechaIngreso.isoformat(),
-                'monto': float(eq.monto),
+                'monto': money_to_float(eq.monto),
                 'descripcion': eq.descripción,
                 'grupo_id': eq.grupo,
                 'proyecto_id': eq.proyecto,
@@ -169,7 +189,7 @@ def get_equipamiento(equipamiento_id):
             'id': equipamiento.id,
             'denominacion': equipamiento.denominacion,
             'fecha_ingreso': equipamiento.fechaIngreso.isoformat(),
-            'monto': float(equipamiento.monto),
+            'monto': money_to_float(equipamiento.monto),
             'descripcion': equipamiento.descripción,
             'grupo_id': equipamiento.grupo,
             'proyecto_id': equipamiento.proyecto,
@@ -291,7 +311,7 @@ def get_equipamiento_by_grupo(grupo_id):
                 'id': eq.id,
                 'denominacion': eq.denominacion,
                 'fecha_ingreso': eq.fechaIngreso.isoformat(),
-                'monto': float(eq.monto),
+                'monto': money_to_float(eq.monto),
                 'descripcion': eq.descripción,
                 'proyecto_id': eq.proyecto,
                 'actividad_id': eq.actividad
@@ -324,7 +344,7 @@ def get_equipamiento_by_proyecto(proyecto_id):
                 'id': eq.id,
                 'denominacion': eq.denominacion,
                 'fecha_ingreso': eq.fechaIngreso.isoformat(),
-                'monto': float(eq.monto),
+                'monto': money_to_float(eq.monto),
                 'descripcion': eq.descripción,
                 'grupo_id': eq.grupo,
                 'actividad_id': eq.actividad
@@ -352,7 +372,7 @@ def get_equipamiento_stats_grupo(grupo_id):
         ).all()
         
         total_items = len(equipamiento_list)
-        total_value = sum(float(eq.monto) for eq in equipamiento_list)
+        total_value = sum(money_to_float(eq.monto) for eq in equipamiento_list)
         
         return jsonify({
             'grupo_id': grupo_id,

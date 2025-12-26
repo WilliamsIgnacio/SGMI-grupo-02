@@ -8,7 +8,9 @@ from sqlalchemy.orm import relationship
 try:
     from sqlalchemy.dialects.postgresql import MONEY as Money
 except Exception:
-    Money = String
+    # Fallback to Numeric for better type handling
+    from sqlalchemy import Numeric
+    Money = Numeric(precision=19, scale=2)
 
 
 class Equipamiento(db.Model):

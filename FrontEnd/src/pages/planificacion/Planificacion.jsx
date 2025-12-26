@@ -44,7 +44,7 @@ function Planificacion() {
 
     return (
         <div>
-            <div className="row container-fluid">
+            <div className="row container-fluid planificacion">
                 <div className="col">
                     <Boton texto={"Volver"} accion={volverGrupo}></Boton>
                 </div>
@@ -73,7 +73,7 @@ function Planificacion() {
                 {planificaciones.map((planificacion, index) => (
                     
                         <div className="col">
-                            <Boton key={index} texto={planificacion} accion={() => accederPlanificacion(planificacion)}></Boton>
+                            <Boton className="boton-anio" key={index} texto={planificacion} accion={() => accederPlanificacion(planificacion)}></Boton>
                         </div>
                     
                 ))}

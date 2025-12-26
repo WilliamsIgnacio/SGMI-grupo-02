@@ -1,12 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Anta&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 .navbar {
     padding: 0px;
+    background-color: #F37F32 !important;
+    margin-bottom: 20px;
 }
 
 .figure {
     margin: 0px;
 }
 
-.imagen {
+.imagen-user {
     margin: 5px;
     border-radius: 100%;
     height: 60px;
@@ -19,3 +24,28 @@
 .desplegable {
     padding-right: 10px;
 }
+
+.titulo {
+    font-family: "Anta", sans-serif;
+    color: white;
+    font-size: 50px;
+}
+
+.titulo:hover {
+    color: #ffcca9;
+}
+
+.link {
+    color: white;
+    font-family: "Albert Sans", sans-serif !important;
+    font-size: 20px;
+}
+
+.link:hover {
+    color: #ffcca9;
+}
+
+.d-flex {
+    color: white;
+}
+

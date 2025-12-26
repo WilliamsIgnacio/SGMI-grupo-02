@@ -5,6 +5,9 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional, List
 
+
+# Modelo Grupo - Grupo de investigación
+# Agrego comentario para forzar commit.
 class Grupo(db.Model):
     __tablename__ = 'grupo'
     
@@ -13,17 +16,24 @@ class Grupo(db.Model):
     nombre = Column(String, nullable=False)
     objetivos = Column(Text, nullable=False)
     organigrama = Column(String)
+    correoElectronico = Column('correo_electronico', String)
+    director = Column(String)
+    vicedirector = Column(String)
     consejo_ejecutivo = Column(String)
     unidad_academica = Column(String)
     
     def __init__(self, sigla: str, nombre: str, objetivos: str, organigrama: Optional[str] = None,
-                 consejo_ejecutivo: Optional[str] = None, unidad_academica: Optional[str] = None,
-                 id: Optional[Integer] = None):
+                 correoElectronico: Optional[str] = None, director: Optional[str] = None,
+                 vicedirector: Optional[str] = None, consejo_ejecutivo: Optional[str] = None, 
+                 unidad_academica: Optional[str] = None, id: Optional[Integer] = None):
         self.id = id
         self.sigla = sigla
         self.nombre = nombre
         self.objetivos = objetivos
         self.organigrama = organigrama
+        self.correoElectronico = correoElectronico
+        self.director = director
+        self.vicedirector = vicedirector
         self.consejo_ejecutivo = consejo_ejecutivo
         self.unidad_academica = unidad_academica
     

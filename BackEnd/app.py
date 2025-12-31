@@ -54,7 +54,9 @@ from routes.controladorSoporte import soporte_bp
 from routes.controladorVisitante import visitante_bp
 
 # ============ Register Blueprints ============
-app.register_blueprint(actividad_docente_bp, url_prefix='/api/actividades-docente')
+app.register_blueprint(actividad_docente_bp, url_prefix='/api/actividades-docente')  #Funciona todo
+
+
 app.register_blueprint(becario_bp, url_prefix='/api/becarios')
 app.register_blueprint(enums_bp, url_prefix='/api/enums')
 app.register_blueprint(experto_bp)  # Already has url_prefix

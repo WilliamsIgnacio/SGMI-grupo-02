@@ -30,6 +30,7 @@ function Grupo() {
     const [mostrarModal, setMostrarModal] = useState(false); 
     
     const [grupos, setGrupos] = useState([]);
+    let tamanio = grupos.length;
     
     const [paginaActual, setPaginaActual] = useState(1); 
     
@@ -493,6 +494,9 @@ function Grupo() {
                     {renderizarContenidoModal()}
                 </ModalFormularios>
             </div>
+            <p>
+                tamanio total {tamanio}
+            </p>
         </div>
     )
 }

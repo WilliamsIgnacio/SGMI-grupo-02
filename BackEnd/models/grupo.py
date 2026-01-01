@@ -21,7 +21,7 @@ class Grupo(db.Model):
     vicedirector = Column(String)
     consejo_ejecutivo = Column(String)
     unidad_academica = Column(String)
-    
+    activo = Column(S)
     def __init__(self, sigla: str, nombre: str, objetivos: str, organigrama: Optional[str] = None,
                  correoElectronico: Optional[str] = None, director: Optional[str] = None,
                  vicedirector: Optional[str] = None, consejo_ejecutivo: Optional[str] = None, 

@@ -32,7 +32,7 @@ function Login() {
                     </Form>
                     <Boton className="boton-iniciar-sesion" texto={"Iniciar Sesión"} accion={iniciarSesion}></Boton>
                 </div>
-                <div className="col imagen">
+                <div className="col-7 imagen">
                     <Image className="imagen-iniciar-sesion" src={imagenLogin} alt="Imagen del login"></Image>
                 </div>
             </div>

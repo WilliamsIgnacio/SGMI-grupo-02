@@ -6,8 +6,6 @@ from decimal import Decimal
 from typing import Optional, List
 
 
-# Modelo Grupo - Grupo de investigación
-# Agrego comentario para forzar commit.
 class Grupo(db.Model):
     __tablename__ = 'grupo'
     
@@ -16,30 +14,34 @@ class Grupo(db.Model):
     nombre = Column(String, nullable=False)
     objetivos = Column(Text, nullable=False)
     organigrama = Column(String)
-    correoElectronico = Column('correo_electronico', String)
+    correo_electronico = Column(String)
     director = Column(String)
     vicedirector = Column(String)
     consejo_ejecutivo = Column(String)
     unidad_academica = Column(String)
+    activo = Column(Boolean)
     
-    def __init__(self, sigla: str, nombre: str, objetivos: str, organigrama: Optional[str] = None,
-                 correoElectronico: Optional[str] = None, director: Optional[str] = None,
-                 vicedirector: Optional[str] = None, consejo_ejecutivo: Optional[str] = None, 
-                 unidad_academica: Optional[str] = None, id: Optional[Integer] = None):
-        self.id = id
-        self.sigla = sigla
-        self.nombre = nombre
-        self.objetivos = objetivos
-        self.organigrama = organigrama
-        self.correoElectronico = correoElectronico
-        self.director = director
-        self.vicedirector = vicedirector
-        self.consejo_ejecutivo = consejo_ejecutivo
-        self.unidad_academica = unidad_academica
     
+
     proyectos = relationship('Proyecto', back_populates='grupo_ref')
     persona_grupos = relationship('PersonaGrupo', back_populates='grupo_ref', cascade="all, delete-orphan")
     equipamientos = relationship('Equipamiento', back_populates='grupo_ref')
     bibliografias = relationship('Bibliografia', back_populates='grupo_ref')
     participaciones = relationship('Participacion', back_populates='grupo_ref')
     distinciones = relationship('Distincion', back_populates='grupo_ref', foreign_keys='Distincion.grupo')
+
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'sigla': self.sigla,
+            'nombre': self.nombre,
+            'objetivos': self.objetivos,
+            'organigrama': self.organigrama,
+            'correoElectronico': self.correo_electronico,
+            'director': self.director,
+            'vicedirector': self.vicedirector,
+            'consejo_ejecutivo': self.consejo_ejecutivo,
+            'unidad_academica': self.unidad_academica,
+            'activo': self.activo
+        }

@@ -47,18 +47,16 @@ from routes.ControladorOrganizaciones import org_bp
 from routes.ControladorParticipacion import participacion_bp
 from routes.ControladorPersonal import personal_bp
 from routes.controladorProyecto import proyecto_bp
+from routes.ControladorGrupo import grupos_bp
 
 # ============ Register Blueprints ============
 app.register_blueprint(actividad_docente_bp, url_prefix='/api/actividades-docente')  #Funciona todo
-
-
-
 app.register_blueprint(enums_bp, url_prefix='/api/enums')
-app.register_blueprint(experto_bp)  # Already has url_prefix
+app.register_blueprint(experto_bp)
 app.register_blueprint(grado_academico_bp, url_prefix='/api/grados-academicos')
-app.register_blueprint(inventario_bp)  # Already has url_prefix
-app.register_blueprint(org_bp)  # Already has url_prefix
-app.register_blueprint(participacion_bp)  # Already has url_prefix
+app.register_blueprint(inventario_bp)
+app.register_blueprint(grupos_bp, url_prefix='/api/grupos')
+app.register_blueprint(participacion_bp)
 app.register_blueprint(personal_bp, url_prefix='/api/personal')
 app.register_blueprint(proyecto_bp, url_prefix='/api/proyectos')
 

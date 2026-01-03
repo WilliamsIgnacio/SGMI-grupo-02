@@ -14,9 +14,14 @@ administrador = AdminPersonal()
 
 class ControladorPersonal(MethodView):
 
-    def get(self, id = None):
+    def get(self, id = None, grupo = None):
 
-        if id is None:
+        if grupo is None:
+            lista_personal = administrador.obtenerPersonalDeGrupo(grupo)
+            respuesta = jsonify([personal.to_dict() for personal in lista_personal])
+            return respuesta, 200
+
+        elif id is None:
             lista_personal = administrador.obtenerTodoPersonal()
             respuesta = jsonify([personal.to_dict() for personal in lista_personal])
             return respuesta, 200
@@ -32,30 +37,50 @@ class ControladorPersonal(MethodView):
                 respuesta = jsonify({"error" : "Personal no encontrado"}), 404
 
 
-    def post(self, operacion):
-        
-        if operacion is not None and operacion not in {1, 2, 3, 4, 5}:
-        
-            respuesta = {'mensaje': "Operacion invalida: 1- Profesional, 2- Soporte, 3- Becario, 4- Visitante, 5-Investigador"}
-            return jsonify(respuesta), 400
-        
-        data = request.get_json()
+    def post(self, operacion = None, personalId = None):
 
-        try:
-            nuevoPersonal = administrador.crearPersonal(data, operacion)
-            respuesta = {
-                'mensaje': 'Personal creado exitosamente',
-                'profesional': nuevoPersonal.to_dict()
-            }
-            return jsonify(respuesta), 201
+        if personalId is not None:
+
+            data = request.get_json()
+
+            try:    
+                vinculo = administrador.vincularPersonaGrupo(data, personalId)
+                respuesta = {
+                    "mensaje": "Personal asignado al grupo exitosamente",
+                    "vinculo": vinculo.to_dict()
+                }
+            
+                return jsonify(respuesta), 201
+
+            except Exception as excepcion:
+                return jsonify({"mensaje": f"Error al asignar: {str(excepcion)}"}), 500
         
-        except ValueError as error:
-            respuesta = {'mensaje': str(error)}
-            return jsonify(respuesta), 400
-        
-        except Exception as excepcion:
-            respuesta = {'mensaje': 'Error al crear' + str(excepcion)}
-            return jsonify(respuesta), 500
+
+        elif operacion is not None:
+
+            if operacion not in {1, 2, 3, 4, 5}:
+            
+                respuesta = {'mensaje': "Operacion invalida: 1- Profesional, 2- Soporte, 3- Becario, 4- Visitante, 5-Investigador"}
+                return jsonify(respuesta), 400
+
+            data = request.get_json()
+
+            try:
+                nuevoPersonal = administrador.crearPersonal(data, operacion)
+                respuesta = {
+                    'mensaje': 'Personal creado exitosamente',
+                    'profesional': nuevoPersonal.to_dict()
+                }
+                return jsonify(respuesta), 201
+
+            except ValueError as error:
+                respuesta = {'mensaje': str(error)}
+                return jsonify(respuesta), 400
+
+            except Exception as excepcion:
+                respuesta = {'mensaje': 'Error al crear' + str(excepcion)}
+                return jsonify(respuesta), 500
+    
     
 
 
@@ -64,4 +89,6 @@ personal_view = ControladorPersonal.as_view('controlador_personal')
 
 personal_bp.add_url_rule('/', view_func=personal_view, methods=['GET'])
 personal_bp.add_url_rule('/<int:id>', view_func=personal_view, methods=['GET'])
+personal_bp.add_url_rule('/grupo/<int:grupo>', view_func=personal_view, methods=['GET'])
 personal_bp.add_url_rule('/<int:operacion>', view_func=personal_view, methods=['POST'])
+personal_bp.add_url_rule('/asignarPersonal/<int:personalId>', view_func=personal_view, methods=['POST'])

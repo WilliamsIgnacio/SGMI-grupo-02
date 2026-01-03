@@ -14,7 +14,7 @@ class PersonaGrupo(db.Model):
     persona = Column(Integer, ForeignKey('persona.id'), nullable=False)
 
     fecha_inicio = Column(Date, nullable=False)
-    fecha_fin = Column(Date)
+    fecha_fin = Column(Date, nullable=True)
     
     grupo_ref = relationship('Grupo', back_populates='persona_grupos')
     persona_ref = relationship('Personal', back_populates='persona_grupos')

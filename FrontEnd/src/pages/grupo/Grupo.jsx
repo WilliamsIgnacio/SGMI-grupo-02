@@ -30,6 +30,7 @@ function Grupo() {
     const [mostrarModal, setMostrarModal] = useState(false); 
     
     const [grupos, setGrupos] = useState([]);
+    
     let tamanio = grupos.length;
     
     const [paginaActual, setPaginaActual] = useState(1); 
@@ -42,13 +43,27 @@ function Grupo() {
     });
 
     const [datosNuevoGrupo, setDatosNuevoGrupo] = useState({ 
-        sigla: '', nombre: '', unidad_academica: '',
-        director: '', vicedirector: '', correoElectronico: '' 
+        sigla: '', 
+        nombre: '', 
+        unidad_academica: '',
+        director: '', 
+        vicedirector: '', 
+        correoElectronico: '',
+        objetivos: '',
+        organigrama: '',
+        consejo_ejecutivo: ''
     });
     
     const [datosFormularioGrupo, setDatosFormularioGrupo] = useState({ 
-        sigla: '', nombre: '', unidad_academica: '',
-        director: '', vicedirector: '', correoElectronico: ''
+        sigla: '', 
+        nombre: '', 
+        unidad_academica: '',
+        director: '', 
+        vicedirector: '', 
+        correoElectronico: '',
+        objetivos: '',
+        organigrama: '',
+        consejo_ejecutivo: ''
     });
 
     const [contenidoDetalle, setContenidoDetalle] = useState({ 
@@ -72,7 +87,7 @@ function Grupo() {
         "Acciones"
     ];
 
-    const manejarCambioRadio = (id) => { 
+    const handleCambioRadio = (id) => { 
         setGrupoSeleccionadoId(id);
     };
 
@@ -90,28 +105,28 @@ function Grupo() {
         }
     };
 
-    const manejarCambioFormularioNuevo = (e) => { 
-        const { name, value } = e.target; 
+    const handleFormularioNuevo = (error) => { 
+        const { name, value } = error.target; 
         setDatosNuevoGrupo(prev => ({ ...prev, [name]: value }));
     }
 
-    const manejarCambioFormularioExistente = (e) => { 
-        const { name, value } = e.target;
+    const handleCambioFormularioExistente = (error) => { 
+        const { name, value } = error.target;
         setDatosFormularioGrupo(prevData => ({ ...prevData, [name]: value }));
     };
 
-    const manejarEnvio = async (e) => { 
-        e.preventDefault(); 
+    const handleEnvio = async (error) => { 
+        error.preventDefault(); 
         try {
             const datosACrear = {
                 ...datosNuevoGrupo,
-                objetivos: datosNuevoGrupo.objetivos || '',
-                consejo_ejecutivo: datosNuevoGrupo.consejo_ejecutivo || '',
-                organigrama: datosNuevoGrupo.organigrama || '',
+                //objetivos: datosNuevoGrupo.objetivos || '',
+                //organigrama: datosNuevoGrupo.organigrama || ''
+                consejo_ejecutivo: datosNuevoGrupo.consejo_ejecutivo || ''    
             };
 
             await createGrupo(datosACrear);
-            setDatosNuevoGrupo({ sigla: '', nombre: '', unidad_academica: '', director: '', vicedirector: '', correoElectronico: '' });
+            setDatosNuevoGrupo({ sigla: '', nombre: '', unidad_academica: '', director: '', vicedirector: '', correoElectronico: '', objetivos: '', organigrama: '' });
             await obtenerGrupos(); 
             setMostrarModal(false); 
         } catch (error) {
@@ -120,8 +135,8 @@ function Grupo() {
         }
     };
 
-    const manejarActualizacion = async (e) => { 
-        e.preventDefault();
+    const handleActualizacion = async (error) => { 
+        error.preventDefault();
         if (!idGrupoAModificar) return console.error("No hay ID de grupo para actualizar.");
 
         try {
@@ -162,7 +177,7 @@ function Grupo() {
         }
     };
     
-    const manejarEliminacion = async (id, nombre) => { 
+    const handleEliminacion = async (id, nombre) => { 
         const confirmar = window.confirm(`¿Estás seguro de que deseas eliminar el grupo "${nombre}"? Esta acción es irreversible.`);
         
         if (confirmar) {
@@ -233,7 +248,7 @@ function Grupo() {
         setContenidoDetalle(prev => ({ ...prev, contenido: e.target.value }));
     };
 
-    const manejarEnvioDetalle = async (e) => { 
+    const handleEnvioDetalle = async (e) => { 
         e.preventDefault();
         const { grupoId, campo, contenido } = contenidoDetalle;
 
@@ -327,7 +342,7 @@ function Grupo() {
                 className="form-check-input"
                 name="grupoSelection"
                 checked={grupoSeleccionadoId === grupoId}
-                onChange={() => manejarCambioRadio(grupoId)}
+                onChange={() => handleCambioRadio(grupoId)}
             />
         );
         
@@ -339,7 +354,7 @@ function Grupo() {
         );
         
         const botonEliminar = (
-            <BotonAgregar accion={() => manejarEliminacion(grupoId, grupoNombre)}>
+            <BotonAgregar accion={() => handleEliminacion(grupoId, grupoNombre)}>
                 <img src={imagenEliminar} alt="icono eliminar" style={{width: '15px'}} />
             </BotonAgregar>
             
@@ -390,7 +405,7 @@ function Grupo() {
         );
 
         const areaTextoDetalleEditable = () => (
-            <Form onSubmit={manejarEnvioDetalle}>
+            <Form onSubmit={handleEnvioDetalle}>
                 <FloatingLabel 
                     controlId="floatingTextareaDetalle" 
                     label="Contenido"
@@ -420,20 +435,20 @@ function Grupo() {
         switch(tipo) {
             case 'agregar':
                 return (
-                    <Form onSubmit={manejarEnvio} key={claveFormulario}> 
+                    <Form onSubmit={handleEnvio} key={claveFormulario}> 
                         <FormularioGrupo 
                             data={datosNuevoGrupo} 
-                            handleChange={manejarCambioFormularioNuevo}
+                            handleChange={handleFormularioNuevo}
                             isModifying={false}
                         />
                     </Form>
                 );
             case 'modificar':
                 return (
-                    <Form onSubmit={manejarActualizacion}>
+                    <Form onSubmit={handleActualizacion}>
                         <FormularioGrupo 
                             data={datosFormularioGrupo} 
-                            handleChange={manejarCambioFormularioExistente}
+                            handleChange={handleCambioFormularioExistente}
                             isModifying={true}
                         />
                     </Form>

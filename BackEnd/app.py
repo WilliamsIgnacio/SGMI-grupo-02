@@ -43,7 +43,6 @@ from routes.controladorEnumerativas import enums_bp
 from routes.controladorExperto import experto_bp
 from routes.controladorGradoAcademico import grado_academico_bp
 from routes.ControladorInventario import inventario_bp
-from routes.ControladorOrganizaciones import org_bp
 from routes.ControladorParticipacion import participacion_bp
 from routes.ControladorPersonal import personal_bp
 from routes.controladorProyecto import proyecto_bp

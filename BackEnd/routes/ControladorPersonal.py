@@ -2,6 +2,7 @@ from datetime import date
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 from database import db
+
 from models.personal import Personal, Investigador, Profesional, Becario, Soporte, Visitante
 from models.actividadDocente import ActividadDocente
 from models.gradoAcademico import GradoAcademico
@@ -9,8 +10,10 @@ from models.models_db import Institucion, LoginCredentials
 
 from services.AdminPersonal import AdminPersonal
 
+
 personal_bp = Blueprint('personal_bp', __name__)
 administrador = AdminPersonal()
+
 
 class ControladorPersonal(MethodView):
 

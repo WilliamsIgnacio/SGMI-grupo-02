@@ -8,6 +8,7 @@ actividad_docente_bp = Blueprint('actividad_docente_bp', __name__)
 service = AdminActividadDocente()
 
 class ControladorActividadDocente(MethodView):
+    
     def get(self, id = None):
 
         #Por default trae todas las actividades
@@ -53,6 +54,7 @@ class ControladorActividadDocente(MethodView):
         except Exception as excepcion:
             db.session.rollback()
             return jsonify({'error': 'Error al actualizar', 'detalle': str(excepcion)}),400
+
 
     def delete(self, id):
         try:
